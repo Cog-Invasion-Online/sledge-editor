@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Sledge.Graphics.Helpers;
+using System.Threading.Tasks;
 
 namespace Sledge.Providers.Texture
 {
@@ -81,7 +82,7 @@ namespace Sledge.Providers.Texture
             item.Package.Provider.LoadTextures(new[] { item });
         }
 
-        public static void LoadTextureItems(IEnumerable<TextureItem> items)
+        public static async Task LoadTextureItems(IEnumerable<TextureItem> items)
         {
             var list = items.ToList();
 
@@ -93,7 +94,7 @@ namespace Sledge.Providers.Texture
 
         private static void LoadTextures(TextureProvider provider, IEnumerable<TextureItem> items)
         {
-            var all = items.Where(x => !TextureHelper.Exists(x.Name.ToLowerInvariant())).ToList();
+            var all = items.Where(x => !TextureHelper.Exists(x.Name)).ToList();
             if (!all.Any()) return;
             provider.LoadTextures(all);
         }

@@ -57,7 +57,7 @@ namespace Sledge.Editor.UI
             var match = Find.Text;
             if (!ActionExact.Checked)
             {
-                return name.ToLowerInvariant().Contains(match.ToLowerInvariant());
+                return name.Contains(match);
             }
             return String.Equals(name, match, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -66,10 +66,10 @@ namespace Sledge.Editor.UI
         {
             var list = new List<Tuple<string, TextureItem, ITexture>>();
             var substitute = ActionSubstitute.Checked;
-            var find = Find.Text.ToLowerInvariant();
-            var replace = Replace.Text.ToLowerInvariant();
+            var find = Find.Text;
+            var replace = Replace.Text;
 
-            foreach (var name in names.Select(x => x.ToLowerInvariant()).Distinct())
+            foreach (var name in names.Select(x => x).Distinct())
             {
                 var n = substitute ? name.Replace(find, replace) : replace;
 
@@ -92,7 +92,7 @@ namespace Sledge.Editor.UI
             var replacements = GetReplacements(faces.Select(x => x.Texture.Name));
             Action<Document, Face> action = (doc, face) =>
                                                 {
-                                                    var repl = replacements.FirstOrDefault(x => x.Item1 == face.Texture.Name.ToLowerInvariant());
+                                                    var repl = replacements.FirstOrDefault(x => x.Item1 == face.Texture.Name);
                                                     if (repl == null) return;
                                                     if (rescale)
                                                     {

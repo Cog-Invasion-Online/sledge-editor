@@ -27,7 +27,9 @@ namespace Sledge.Editor.Settings
     {
         private List<Game> _games;
         private List<Build> _builds;
-        private List<Hotkey> _hotkeys; 
+        private List<Hotkey> _hotkeys;
+
+        private string _lastAdditionalPackageRootFolder;
 
         public SettingsForm()
         {
@@ -41,6 +43,8 @@ namespace Sledge.Editor.Settings
             BindColourPicker(ViewportBackgroundColour);
             AddColourPresetButtons();
             AddFileTypeBoxes();
+
+            _lastAdditionalPackageRootFolder = "";
 
             UpdateData();
 
@@ -967,6 +971,12 @@ namespace Sledge.Editor.Settings
             if (SteamUsername.Items.Count > 0) SteamUsername.SelectedIndex = Math.Max(0, idx);
         }
 
+        private Engine GetSelectedEngine()
+        {
+            string engineName = GameTree.SelectedNode.Text;
+            return (Engine)Enum.Parse(typeof(Engine), engineName);
+        }
+
         private void RemoveGameClicked(object sender, EventArgs e)
         {
             if (_selectedGame != null)
@@ -981,10 +991,10 @@ namespace Sledge.Editor.Settings
 
         private void AddGameClicked(object sender, EventArgs e)
         {
-            _games.Add(new Game
+            Game game = new Game
             {
                 ID = 0,
-                Engine = Engine.Goldsource,
+                Engine = GetSelectedEngine(),
                 Name = "New Game",
                 BuildID = _builds.Select(x => x.ID).FirstOrDefault(),
                 Autosave = true,
@@ -994,8 +1004,16 @@ namespace Sledge.Editor.Settings
                 DefaultLightmapScale = 1,
                 DefaultTextureScale = 1,
                 Fgds = new List<Fgd>(),
-                AdditionalPackages = new List<string>()
-            });
+                AdditionalPackages = new List<string>(),
+            };
+            if (game.Engine == Engine.Panda)
+            {
+                // Panda is never linked to steam.
+                game.SteamInstall = false;
+            }
+                
+            _games.Add(game);
+
             ReIndex();
             UpdateGameTree();
             var node = GameTree.Nodes.OfType<TreeNode>().SelectMany(x => x.Nodes.OfType<TreeNode>())
@@ -1005,10 +1023,11 @@ namespace Sledge.Editor.Settings
 
         private void AddBuildClicked(object sender, EventArgs e)
         {
+
             _builds.Add(new Build
                             {
                                 ID = 0,
-                                Engine = Engine.Goldsource,
+                                Engine = GetSelectedEngine(),
                                 Name = "New Build"
                             });
             ReIndex();
@@ -1190,6 +1209,15 @@ namespace Sledge.Editor.Settings
         private void SelectedGameEngineChanged(object sender, EventArgs e)
         {
             if (_selectedGame == null || SelectedGameEngine.SelectedIndex < 0) return;
+
+            SelectedGameMod.Visible = true;
+            SelectedGameExecutable.Visible = true;
+            SelectedGameBase.Visible = true;
+            lblGameMod.Visible = true;
+            lblBaseGame.Visible = true;
+            lblGameExe.Visible = true;
+            SelectedGameUseHDModels.Visible = true;
+
             var eng = (Engine) SelectedGameEngine.SelectedItem;
             var change = eng != _selectedGame.Engine;
             _selectedGame.Engine = eng;
@@ -1202,6 +1230,22 @@ namespace Sledge.Editor.Settings
                 SelectedGameDirBrowse.Enabled = true;
                 SelectedGameSteamDir.Enabled = false;
                 SelectedGameWonDirChanged(null, null);
+            }
+            else if (eng == Engine.Panda)
+            {
+                lblGameWONDir.Visible = SelectedGameWonDir.Visible = SelectedGameDirBrowse.Visible = true;
+                SelectedGameMod.Visible = false;
+                SelectedGameExecutable.Visible = false;
+                SelectedGameBase.Visible = false;
+                SelectedGameUseHDModels.Visible = false;
+                lblGameMod.Visible = false;
+                lblBaseGame.Visible = false;
+                lblGameExe.Visible = false;
+                lblGameSteamDir.Visible = SelectedGameSteamDir.Visible = false;
+                SelectedGameWonDir.Enabled = true;
+                SelectedGameDirBrowse.Enabled = true;
+                SelectedGameSteamDir.Enabled = false;
+                SelectedGamePandaDirChanged(null, null);
             }
             else
             {
@@ -1248,6 +1292,10 @@ namespace Sledge.Editor.Settings
             SelectedGameSteamDir.Items.AddRange(games.Where(x => include.Contains(x.ToLower())).Distinct().OrderBy(x => x.ToLower()).ToArray<object>());
             var idx = SelectedGameSteamDir.Items.IndexOf(_selectedGame.SteamGameDir ?? "");
             if (SelectedGameSteamDir.Items.Count > 0) SelectedGameSteamDir.SelectedIndex = Math.Max(0, idx);
+        }
+
+        private void SelectedGamePandaDirChanged(object sender, EventArgs e)
+        {
         }
 
         private void SelectedGameWonDirChanged(object sender, EventArgs e)
@@ -1416,10 +1464,12 @@ namespace Sledge.Editor.Settings
         {
             using (var ofd = new FolderBrowserDialog())
             {
+                ofd.SelectedPath = _lastAdditionalPackageRootFolder;
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     _selectedGame.AdditionalPackages.Add(ofd.SelectedPath);
                     SelectedGameUpdateAdditionalPackages();
+                    _lastAdditionalPackageRootFolder = ofd.SelectedPath + "\\..\\";
                 }
             }
         }
@@ -1484,7 +1534,7 @@ namespace Sledge.Editor.Settings
             var eng = (Engine) SelectedBuildEngine.SelectedItem;
             var change = eng != _selectedBuild.Engine;
             _selectedBuild.Engine = eng;
-            var gs = eng == Engine.Goldsource;
+            var gs = eng == Engine.Goldsource || eng == Engine.Panda;
             SelectedBuildCsg.Enabled = gs;
             if (change)
             {

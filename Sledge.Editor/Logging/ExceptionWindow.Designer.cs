@@ -135,7 +135,6 @@
             this.FullError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FullError.Enabled = false;
             this.FullError.Location = new System.Drawing.Point(184, 255);
             this.FullError.Multiline = true;
             this.FullError.Name = "FullError";

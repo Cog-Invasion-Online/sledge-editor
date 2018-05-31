@@ -32,6 +32,7 @@ using Sledge.Settings;
 using Sledge.Settings.Models;
 using Sledge.UI;
 using Path = System.IO.Path;
+using System.Threading.Tasks;
 
 namespace Sledge.Editor.Documents
 {
@@ -107,12 +108,24 @@ namespace Sledge.Editor.Documents
                 GameData.MapSizeHigh = game.OverrideMapSizeHigh;
             }
 
+            Console.WriteLine("Steam Install? {0}", Game.SteamInstall);
+
+            Console.WriteLine("Game Directories:");
+            foreach (string gDir in Environment.GetGameDirectories())
+            {
+                Console.WriteLine("\t" + gDir);
+            }
+            Console.WriteLine("Additional Packages:");
+            foreach (string pak in Game.AdditionalPackages)
+            {
+                Console.WriteLine("\t" + pak);
+            }
             TextureCollection = TextureProvider.CreateCollection(Environment.GetGameDirectories(), Game.AdditionalPackages, Game.GetTextureBlacklist(), Game.GetTextureWhitelist());
             /* .Union(GameData.MaterialExclusions) */ // todo material exclusions
 
             var texList = Map.GetAllTextures();
             var items = TextureCollection.GetItems(texList);
-            TextureProvider.LoadTextureItems(items);
+            Task loadTIsTask = TextureProvider.LoadTextureItems(items);
 
             Map.PostLoadProcess(GameData, GetTexture, SettingsManager.GetSpecialTextureOpacity);
             Map.UpdateDecals(this);

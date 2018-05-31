@@ -37,7 +37,7 @@ namespace Sledge.Providers.Texture
             _items = new Dictionary<string, TextureItem>();
             foreach (var item in packages.SelectMany(x => x.Items))
             {
-                var k = item.Key.ToLowerInvariant();
+                var k = item.Key;
                 if (!_items.ContainsKey(k)) _items.Add(k, item.Value);
             }
             _recentTextures = new List<TextureItem>();
@@ -84,12 +84,12 @@ namespace Sledge.Providers.Texture
 
         public IEnumerable<TextureItem> GetItems(IEnumerable<string> names)
         {
-            return names.Select(x => x.ToLowerInvariant()).Where(x => _items.ContainsKey(x)).Select(x => _items[x]);
+            return names.Select(x => x).Where(x => _items.ContainsKey(x)).Select(x => _items[x]);
         }
 
         public TextureItem GetItem(string textureName)
         {
-            textureName = textureName.ToLowerInvariant();
+            textureName = textureName;
             return _items.ContainsKey(textureName) ? _items[textureName] : null;
         }
     }

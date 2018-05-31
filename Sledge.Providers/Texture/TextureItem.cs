@@ -60,11 +60,11 @@ namespace Sledge.Providers.Texture
 
         public ITexture GetTexture()
         {
-            if (!TextureHelper.Exists(Name.ToLowerInvariant()))
+            if (!TextureHelper.Exists(Name))
             {
                 TextureProvider.LoadTextureItem(this);
             }
-            return TextureHelper.Get(Name.ToLowerInvariant());
+            return TextureHelper.Get(Name);
         }
     }
 }

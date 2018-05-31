@@ -66,11 +66,19 @@ namespace Sledge.Editor.Environment
             }
             else
             {
-                yield return Path.Combine(Game.WonGameDir, Game.ModDir);
-                if (!String.Equals(Game.BaseDir, Game.ModDir, StringComparison.CurrentCultureIgnoreCase))
+                if (Game.Engine == Engine.Panda)
                 {
-                    yield return Path.Combine(Game.WonGameDir, Game.BaseDir);
+                    yield return Game.WonGameDir;
                 }
+                else
+                {
+                    yield return Path.Combine(Game.WonGameDir, Game.ModDir);
+                    if (!String.Equals(Game.BaseDir, Game.ModDir, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        yield return Path.Combine(Game.WonGameDir, Game.BaseDir);
+                    }
+                }
+                
             }
 
             var b = Build;

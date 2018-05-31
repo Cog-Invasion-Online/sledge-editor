@@ -247,7 +247,7 @@ namespace Sledge.Editor.Tools.TextureTool
 
         private void UpdateRecentTextureList()
         {
-            RecentTexturesList.SetTextureList(Document.TextureCollection.GetRecentTextures().Where(x => x.Name.ToLower().Contains(RecentFilterTextbox.Text.ToLower())));
+            RecentTexturesList.SetTextureList(Document.TextureCollection.GetRecentTextures().Where(x => x.Name.Contains(RecentFilterTextbox.Text)));
         }
 
         public void SelectTexture(TextureItem item)

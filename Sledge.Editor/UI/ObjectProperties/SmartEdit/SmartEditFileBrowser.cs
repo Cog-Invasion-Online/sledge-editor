@@ -25,24 +25,20 @@ namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
 
         private FileSystemBrowserDialog CreateDialog()
         {
-            var fs = new FileSystemBrowserDialog(
-                Property.VariableType == VariableType.Sound
-                    ? Document.Environment.Root.GetChild("sound")
-                    : Document.Environment.Root
-                );
+            var fs = new FileSystemBrowserDialog(Document.Environment.Root);
             switch (Property.VariableType)
             {
                 case VariableType.Studio:
-                    fs.Filter = "*.mdl";
-                    fs.FilterText = "Models (*.mdl)";
+                    fs.Filter = "*.bam,*.egg";
+                    fs.FilterText = "Models (*.bam, *.egg)";
                     break;
                 case VariableType.Sprite:
-                    fs.Filter = "*.spr";
-                    fs.FilterText = "Sprites (*.spr)";
+                    fs.Filter = "*.bam,*.egg";
+                    fs.FilterText = "Sprites (*.bam, *.egg)";
                     break;
                 case VariableType.Sound:
-                    fs.Filter = "*.wav,*.mp3";
-                    fs.FilterText = "Audio (*.wav, *.mp3)";
+                    fs.Filter = "*.wav,*.mp3,*.ogg";
+                    fs.FilterText = "Audio (*.wav, *.mp3, *.ogg)";
                     break;
             }
             return fs;
@@ -66,7 +62,6 @@ namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
             var path = "";
             while (file != null && !(file is RootFile))
             {
-                if (Property.VariableType == VariableType.Sound && file.Name.ToLower() == "sound" && (file.Parent == null || file.Parent is RootFile)) break;
                 path = "/" + file.Name + path;
                 file = file.Parent;
             }

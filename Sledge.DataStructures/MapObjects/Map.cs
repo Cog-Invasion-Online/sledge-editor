@@ -236,7 +236,7 @@ namespace Sledge.DataStructures.MapObjects
                     {
                         if (f.Texture.Texture == null)
                         {
-                            f.Texture.Texture = textureAccessor(f.Texture.Name.ToLowerInvariant());
+                            f.Texture.Texture = textureAccessor(f.Texture.Name);
                             f.CalculateTextureCoordinates(true);
                         }
                         if (disp && !(f is Displacement))
@@ -245,7 +245,7 @@ namespace Sledge.DataStructures.MapObjects
                         }
                         else if (f.Texture.Texture != null)
                         {
-                            f.Opacity = textureOpacity(f.Texture.Name.ToLowerInvariant());
+                            f.Opacity = textureOpacity(f.Texture.Name);
                             if (!HideNullTextures && f.Opacity < 0.1) f.Opacity = 1;
                         }
                     });

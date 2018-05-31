@@ -140,7 +140,7 @@ namespace Sledge.Editor.Settings
             this.SelectedGameSteamDir = new System.Windows.Forms.ComboBox();
             this.SelectedGameName = new System.Windows.Forms.TextBox();
             this.label42 = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
+            this.lblGameExe = new System.Windows.Forms.Label();
             this.SelectedGameEngine = new System.Windows.Forms.ComboBox();
             this.lblGameMod = new System.Windows.Forms.Label();
             this.lblGameEngine = new System.Windows.Forms.Label();
@@ -153,6 +153,7 @@ namespace Sledge.Editor.Settings
             this.SelectedGameAutosaveTime = new System.Windows.Forms.NumericUpDown();
             this.SelectedGameUseDiffAutosaveDir = new System.Windows.Forms.CheckBox();
             this.label15 = new System.Windows.Forms.Label();
+            this.SelectedGameAutosaveTriggerFileSave = new System.Windows.Forms.CheckBox();
             this.SelectedGameAutosaveOnlyOnChange = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.SelectedGameDiffAutosaveDirBrowse = new System.Windows.Forms.Button();
@@ -317,7 +318,6 @@ namespace Sledge.Editor.Settings
             this.btnApplyAndCloseSettings = new System.Windows.Forms.Button();
             this.btnApplySettings = new System.Windows.Forms.Button();
             this.HelpTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.SelectedGameAutosaveTriggerFileSave = new System.Windows.Forms.CheckBox();
             this.tbcSettings.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.tabIntegration.SuspendLayout();
@@ -1506,7 +1506,7 @@ namespace Sledge.Editor.Settings
             this.tabConfigDirectories.Controls.Add(this.SelectedGameSteamDir);
             this.tabConfigDirectories.Controls.Add(this.SelectedGameName);
             this.tabConfigDirectories.Controls.Add(this.label42);
-            this.tabConfigDirectories.Controls.Add(this.label41);
+            this.tabConfigDirectories.Controls.Add(this.lblGameExe);
             this.tabConfigDirectories.Controls.Add(this.SelectedGameEngine);
             this.tabConfigDirectories.Controls.Add(this.lblGameMod);
             this.tabConfigDirectories.Controls.Add(this.lblGameEngine);
@@ -1575,7 +1575,7 @@ namespace Sledge.Editor.Settings
             // 
             // SelectedGameWonDir
             // 
-            this.SelectedGameWonDir.Location = new System.Drawing.Point(81, 100);
+            this.SelectedGameWonDir.Location = new System.Drawing.Point(80, 100);
             this.SelectedGameWonDir.Name = "SelectedGameWonDir";
             this.SelectedGameWonDir.Size = new System.Drawing.Size(288, 20);
             this.SelectedGameWonDir.TabIndex = 5;
@@ -1667,14 +1667,14 @@ namespace Sledge.Editor.Settings
             this.label42.Text = "Game Run Arguments (e.g. -dev -console)";
             this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label41
+            // lblGameExe
             // 
-            this.label41.Location = new System.Drawing.Point(10, 181);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(198, 20);
-            this.label41.TabIndex = 9;
-            this.label41.Text = "Game Executable (e.g. \'hl.exe\')";
-            this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblGameExe.Location = new System.Drawing.Point(10, 181);
+            this.lblGameExe.Name = "lblGameExe";
+            this.lblGameExe.Size = new System.Drawing.Size(198, 20);
+            this.lblGameExe.TabIndex = 9;
+            this.lblGameExe.Text = "Game Executable (e.g. \'hl.exe\')";
+            this.lblGameExe.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SelectedGameEngine
             // 
@@ -1829,6 +1829,17 @@ namespace Sledge.Editor.Settings
             this.label15.Size = new System.Drawing.Size(69, 13);
             this.label15.TabIndex = 19;
             this.label15.Text = "Keep the last";
+            // 
+            // SelectedGameAutosaveTriggerFileSave
+            // 
+            this.SelectedGameAutosaveTriggerFileSave.Checked = true;
+            this.SelectedGameAutosaveTriggerFileSave.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SelectedGameAutosaveTriggerFileSave.Location = new System.Drawing.Point(99, 199);
+            this.SelectedGameAutosaveTriggerFileSave.Name = "SelectedGameAutosaveTriggerFileSave";
+            this.SelectedGameAutosaveTriggerFileSave.Size = new System.Drawing.Size(330, 20);
+            this.SelectedGameAutosaveTriggerFileSave.TabIndex = 14;
+            this.SelectedGameAutosaveTriggerFileSave.Text = "Also save the actual file when autosaving (i.e. automatic Ctrl+S)";
+            this.SelectedGameAutosaveTriggerFileSave.UseVisualStyleBackColor = true;
             // 
             // SelectedGameAutosaveOnlyOnChange
             // 
@@ -3561,17 +3572,6 @@ namespace Sledge.Editor.Settings
             this.HelpTooltip.UseAnimation = false;
             this.HelpTooltip.UseFading = false;
             // 
-            // SelectedGameAutosaveTriggerFileSave
-            // 
-            this.SelectedGameAutosaveTriggerFileSave.Checked = true;
-            this.SelectedGameAutosaveTriggerFileSave.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.SelectedGameAutosaveTriggerFileSave.Location = new System.Drawing.Point(99, 199);
-            this.SelectedGameAutosaveTriggerFileSave.Name = "SelectedGameAutosaveTriggerFileSave";
-            this.SelectedGameAutosaveTriggerFileSave.Size = new System.Drawing.Size(330, 20);
-            this.SelectedGameAutosaveTriggerFileSave.TabIndex = 14;
-            this.SelectedGameAutosaveTriggerFileSave.Text = "Also save the actual file when autosaving (i.e. automatic Ctrl+S)";
-            this.SelectedGameAutosaveTriggerFileSave.UseVisualStyleBackColor = true;
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3897,7 +3897,7 @@ namespace Sledge.Editor.Settings
         private System.Windows.Forms.CheckBox SelectedBuildCopyBsp;
         private System.Windows.Forms.CheckBox SelectedBuildCopyErr;
         private System.Windows.Forms.CheckBox SelectedBuildCopyLog;
-        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label lblGameExe;
         private System.Windows.Forms.ComboBox SelectedGameExecutable;
         private System.Windows.Forms.TabPage tabConfigSaving;
         private System.Windows.Forms.NumericUpDown SelectedGameAutosaveLimit;

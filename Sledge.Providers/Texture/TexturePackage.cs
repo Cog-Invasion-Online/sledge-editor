@@ -25,13 +25,13 @@ namespace Sledge.Providers.Texture
 
         public void AddTexture(TextureItem item)
         {
-            if (Items.ContainsKey(item.Name.ToLowerInvariant())) return;
-            Items.Add(item.Name.ToLowerInvariant(), item);
+            if (Items.ContainsKey(item.Name)) return;
+            Items.Add(item.Name, item);
         }
 
         public bool HasTexture(string name)
         {
-            return Items.ContainsKey(name.ToLowerInvariant());
+            return Items.ContainsKey(name);
         }
 
         public override string ToString()
@@ -43,7 +43,7 @@ namespace Sledge.Providers.Texture
         {
             foreach (var kv in _loadedItems)
             {
-                TextureHelper.Delete(kv.Value.Name.ToLowerInvariant());
+                TextureHelper.Delete(kv.Value.Name);
             }
         }
     }
