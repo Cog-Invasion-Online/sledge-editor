@@ -5,7 +5,7 @@ using Sledge.Editor.Documents;
 
 namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
 {
-    internal abstract class SmartEditControl : FlowLayoutPanel
+    public abstract class SmartEditControl : FlowLayoutPanel
     {
         public Document Document { get; set; }
         public List<EntityData> EditingEntityData { get; set; }
@@ -20,7 +20,7 @@ namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
 
         public event ValueChangedEventHandler ValueChanged;
 
-        protected virtual void OnValueChanged()
+        public virtual void OnValueChanged()
         {
             if (_setting) return;
             PropertyValue = GetValue();

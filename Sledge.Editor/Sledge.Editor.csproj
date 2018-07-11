@@ -454,6 +454,12 @@
     <Compile Include="UI\MapTreeWindow.Designer.cs">
       <DependentUpon>MapTreeWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\ObjectProperties\SmartEdit\TargetDestinationsEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ObjectProperties\SmartEdit\TargetDestinationsEdit.Designer.cs">
+      <DependentUpon>TargetDestinationsEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ObjectProperties\SmartEdit\SmartEditBoolean.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -749,6 +755,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ObjectProperties\ObjectPropertiesDialog.resx">
       <DependentUpon>ObjectPropertiesDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ObjectProperties\SmartEdit\TargetDestinationsEdit.resx">
+      <DependentUpon>TargetDestinationsEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\PasteSpecialDialog.resx">
       <DependentUpon>PasteSpecialDialog.cs</DependentUpon>

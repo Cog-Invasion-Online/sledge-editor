@@ -29,7 +29,7 @@ namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
             Controls.Add(_validationLabel);
         }
 
-        protected override void OnValueChanged()
+        public override void OnValueChanged()
         {
             DoValidation();
             base.OnValueChanged();

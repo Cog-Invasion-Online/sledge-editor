@@ -7,14 +7,24 @@ using Sledge.DataStructures.GameData;
 namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
 {
     [SmartEdit(VariableType.TargetDestination)]
-    internal class SmartEditTargetDestination : SmartEditControl
+    public class SmartEditTargetDestination : SmartEditControl
     {
-        private readonly ComboBox _comboBox;
+        private readonly Button _editBtn;
+        public string _targetcode;
+
         public SmartEditTargetDestination()
         {
-            _comboBox = new ComboBox { Width = 250 };
-            _comboBox.TextChanged += (sender, e) => OnValueChanged();
-            Controls.Add(_comboBox);
+            _editBtn = new Button();
+            _editBtn.Text = "Edit";
+            _editBtn.Click += DoEdit;
+
+            Controls.Add(_editBtn);
+        }
+
+        private void DoEdit(object sender, EventArgs e)
+        {
+            TargetDestinationsEdit edit = new TargetDestinationsEdit(this);
+            edit.ShowDialog();
         }
 
         protected override string GetName()
@@ -24,33 +34,11 @@ namespace Sledge.Editor.UI.ObjectProperties.SmartEdit
 
         protected override string GetValue()
         {
-            return _comboBox.Text;
-        }
-
-        private IEnumerable<string> GetSortedTargetNames()
-        {
-            return Document.Map.WorldSpawn.Find(x => x.GetEntityData() != null)
-                .Select(x => x.GetEntityData().GetPropertyValue("targetname"))
-                .Where(x => !String.IsNullOrWhiteSpace(x))
-                .Distinct()
-                .OrderBy(x => x.ToLowerInvariant());
+            return _targetcode;
         }
 
         protected override void OnSetProperty()
         {
-            _comboBox.Items.Clear();
-            if (Property != null)
-            {
-                var options = GetSortedTargetNames().ToList();
-                _comboBox.Items.AddRange(options.OfType<object>().ToArray());
-                var index = options.FindIndex(x => String.Equals(x, PropertyValue, StringComparison.InvariantCultureIgnoreCase));
-                if (index >= 0)
-                {
-                    _comboBox.SelectedIndex = index;
-                    return;
-                }
-            }
-            _comboBox.Text = PropertyValue;
         }
     }
 }
