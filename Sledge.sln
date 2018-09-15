@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sledge.UI", "Sledge.UI\Sledge.UI.csproj", "{ABBEE97F-B5A6-4ED6-8D8F-6D4091FB9D44}"
 EndProject
@@ -21,8 +21,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sledge.Sandbox", "Sledge.Sandbox\Sledge.Sandbox.csproj", "{BDFF0077-DC3E-4CE3-9CAF-AF7F076DEED7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sledge.Tools.MapFileDebugger", "Sledge.Tools.MapFileDebugger\Sledge.Tools.MapFileDebugger.csproj", "{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sledge.Tests", "Sledge.Tests\Sledge.Tests.csproj", "{D0059029-B6C9-461E-92F7-D6EA218A4617}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sledge.Common", "Sledge.Common\Sledge.Common.csproj", "{5D414AC8-8B93-489F-9960-877923400FED}"
 EndProject
@@ -146,18 +144,6 @@ Global
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|Mixed Platforms.Build.0 = Release|x86
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|x86.ActiveCfg = Release|x86
 		{8FA24DBE-3A4A-4A99-9C40-FC577C39F933}.Release|x86.Build.0 = Release|x86
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Debug|x86.Build.0 = Debug|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Release|x86.ActiveCfg = Release|Any CPU
-		{D0059029-B6C9-461E-92F7-D6EA218A4617}.Release|x86.Build.0 = Release|Any CPU
 		{5D414AC8-8B93-489F-9960-877923400FED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D414AC8-8B93-489F-9960-877923400FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D414AC8-8B93-489F-9960-877923400FED}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -215,6 +201,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {29734E66-FEE3-4C4C-A4F6-3D7F6C40BC46}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Sledge.vsmdi

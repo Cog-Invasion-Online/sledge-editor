@@ -33,6 +33,7 @@ namespace Sledge.Settings.Models
         public string DefaultBrushEntity { get; set; }
         public decimal DefaultTextureScale { get; set; }
         public decimal DefaultLightmapScale { get; set; }
+        public bool Loaded { get; set; }
 
         public bool IncludeFgdDirectoriesInEnvironment { get; set; }
         public bool OverrideMapSize { get; set; }
@@ -52,6 +53,7 @@ namespace Sledge.Settings.Models
             AutosaveLimit = 5;
             AutosaveOnlyOnChanged = true;
             AutosaveTriggerFileSave = true;
+            Loaded = false;
         }
 
         public void Read(GenericStructure gs)

@@ -105,6 +105,17 @@ namespace Sledge.Providers.Map
             obj["spawnflags"] = data.Flags.ToString(CultureInfo.InvariantCulture);
         }
 
+        private static GenericStructure WriteConnections(EntityData data)
+        {
+            var connections = new GenericStructure("connections");
+            foreach (Output op in data.Outputs)
+            {
+                connections.AddProperty(op.Name, op.Target + "," + op.Input + "," + op.Parameter + "," + op.Delay.ToString("F2") + "," + (op.OnceOnly ? "1" : "0"));
+            }
+
+            return connections;
+        }
+
         private static GenericStructure WriteEditor(MapObject obj)
         {
             var editor = new GenericStructure("editor");
@@ -177,6 +188,7 @@ namespace Sledge.Providers.Map
             ret.Texture.YShift = vaxis.Item2;
             ret.Texture.YScale = vaxis.Item3;
             ret.Texture.Rotation = side.PropertyDecimal("rotation");
+            ret.Texture.LightmapScale = side.PropertyDecimal("lightmapscale", 16);
             ret.Plane = side.PropertyPlane("plane");
 
             var verts = side.Children.FirstOrDefault(x => x.Name == "vertex");
@@ -204,7 +216,7 @@ namespace Sledge.Providers.Map
             ret["uaxis"] = String.Format(CultureInfo.InvariantCulture, "[{0} {1}] {2}", FormatCoordinate(face.Texture.UAxis), face.Texture.XShift, face.Texture.XScale);
             ret["vaxis"] = String.Format(CultureInfo.InvariantCulture, "[{0} {1}] {2}", FormatCoordinate(face.Texture.VAxis), face.Texture.YShift, face.Texture.YScale);
             ret["rotation"] = face.Texture.Rotation.ToString(CultureInfo.InvariantCulture);
-            // ret["lightmapscale"]
+            ret["lightmapscale"] = face.Texture.LightmapScale.ToString(CultureInfo.InvariantCulture);
             // ret["smoothing_groups"]
 
             var verts = new GenericStructure("vertex");
@@ -325,6 +337,24 @@ namespace Sledge.Providers.Map
             {
                 child.SetParent(ret, false);
             }
+
+            var conn = entity.GetChildren("connections").FirstOrDefault() ?? new GenericStructure("connections");
+            foreach(string outputName in conn.GetPropertyKeys())
+            {
+                string value = conn.GetPropertyValue(outputName, false);
+                IEnumerable<string> elems = value.Split(',');
+                Output op = new Output()
+                {
+                    Name = outputName,
+                    Target = elems.ElementAt(0),
+                    Input = elems.ElementAt(1),
+                    Parameter = elems.ElementAt(2),
+                    Delay = Convert.ToDecimal(elems.ElementAt(3)),
+                    OnceOnly = Convert.ToBoolean(elems.ElementAt(4))
+                };
+                ret.EntityData.Outputs.Add(op);
+            }
+
             ret.UpdateBoundingBox(false);
             return ret;
         }
@@ -343,6 +373,12 @@ namespace Sledge.Providers.Map
             foreach (var solid in ent.GetChildren().SelectMany(x => x.FindAll()).OfType<Solid>().OrderBy(x => x.ID))
             {
                 ret.Children.Add(WriteSolid(solid));
+            }
+
+            if (ent.EntityData.Outputs.Any())
+            {
+                var connections = WriteConnections(ent.EntityData);
+                ret.Children.Add(connections);
             }
 
             return ret;

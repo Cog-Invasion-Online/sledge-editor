@@ -25,6 +25,8 @@ namespace Sledge.Editor.Tools.TextureTool
 
             public bool DifferentRotationValues { get; set; }
 
+            public bool DifferentLightmapScaleValues { get; set; }
+
             public bool AllAlignedToFace { get; set; }
             public bool NoneAlignedToFace { get; set; }
 
@@ -40,7 +42,8 @@ namespace Sledge.Editor.Tools.TextureTool
             {
                 Rotation = XShift = YShift = 0;
                 XScale = YScale = 1;
-                DifferentXScaleValues = DifferentYScaleValues = DifferentXShiftValues = DifferentYShiftValues = false;
+                LightmapScale = 16;
+                DifferentXScaleValues = DifferentYScaleValues = DifferentXShiftValues = DifferentYShiftValues = DifferentLightmapScaleValues = false;
                 AllAlignedToFace = AllAlignedToWorld = false;
                 NoneAlignedToFace = NoneAlignedToWorld = true;
             }
@@ -64,6 +67,7 @@ namespace Sledge.Editor.Tools.TextureTool
                         XShift = face.Texture.XShift;
                         YShift = face.Texture.YShift;
                         Rotation = face.Texture.Rotation;
+                        LightmapScale = face.Texture.LightmapScale;
                     }
                     else
                     {
@@ -72,6 +76,7 @@ namespace Sledge.Editor.Tools.TextureTool
                         if (face.Texture.XShift != XShift) DifferentXShiftValues = true;
                         if (face.Texture.YShift != YShift) DifferentYShiftValues = true;
                         if (face.Texture.Rotation != Rotation) DifferentRotationValues = true;
+                        if (face.Texture.LightmapScale != LightmapScale) DifferentLightmapScaleValues = true;
                     }
                     num++;
                 }
@@ -84,6 +89,7 @@ namespace Sledge.Editor.Tools.TextureTool
                 if (DifferentXShiftValues) XShift = 0.000001m;
                 if (DifferentYShiftValues) YShift = 0.000001m;
                 if (DifferentRotationValues) Rotation = 0.000001m;
+                if (DifferentLightmapScaleValues) LightmapScale = 15.999999m;
 
                 if (XScale < -4096 || XScale > 4096) XScale = 1;
                 if (YScale < -4096 || YScale > 4096) YScale = 1;
@@ -336,12 +342,14 @@ namespace Sledge.Editor.Tools.TextureTool
             ShiftXValue.Value = _currentTextureProperties.XShift;
             ShiftYValue.Value = _currentTextureProperties.YShift;
             RotationValue.Value = _currentTextureProperties.Rotation;
+            LightmapValue.Value = _currentTextureProperties.LightmapScale;
 
             if (_currentTextureProperties.DifferentXScaleValues) ScaleXValue.Text = "";
             if (_currentTextureProperties.DifferentYScaleValues) ScaleYValue.Text = "";
             if (_currentTextureProperties.DifferentXShiftValues) ShiftXValue.Text = "";
             if (_currentTextureProperties.DifferentYShiftValues) ShiftYValue.Text = "";
             if (_currentTextureProperties.DifferentRotationValues) RotationValue.Text = "";
+            if (_currentTextureProperties.DifferentLightmapScaleValues) LightmapValue.Text = "";
 
             if (_currentTextureProperties.AllAlignedToFace) AlignToFaceCheckbox.CheckState = CheckState.Checked;
             else if (_currentTextureProperties.NoneAlignedToFace) AlignToFaceCheckbox.CheckState = CheckState.Unchecked;
@@ -391,6 +399,10 @@ namespace Sledge.Editor.Tools.TextureTool
             if (!_currentTextureProperties.DifferentXShiftValues) _currentTextureProperties.XShift = ShiftXValue.Value;
             if (!_currentTextureProperties.DifferentYShiftValues) _currentTextureProperties.YShift = ShiftYValue.Value;
             if (!_currentTextureProperties.DifferentRotationValues) _currentTextureProperties.Rotation = RotationValue.Value;
+            if (!_currentTextureProperties.DifferentLightmapScaleValues) _currentTextureProperties.LightmapScale = LightmapValue.Value;
+
+            Console.WriteLine(LightmapValue.Value);
+            Console.WriteLine("Properties changed");
 
             OnPropertyChanged(_currentTextureProperties);
         }
@@ -432,7 +444,9 @@ namespace Sledge.Editor.Tools.TextureTool
 
         private void LightmapValueChanged(object sender, EventArgs e)
         {
+            Console.WriteLine("Lightmap value changed");
             if (_freeze) return;
+            _currentTextureProperties.DifferentLightmapScaleValues = false;
             PropertiesChanged();
         }
 

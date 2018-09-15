@@ -58,23 +58,22 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.Angles = new Sledge.Editor.UI.AngleControl();
             this.OutputsTab = new System.Windows.Forms.TabPage();
             this.OutputDelete = new System.Windows.Forms.Button();
             this.OutputPaste = new System.Windows.Forms.Button();
             this.OutputCopy = new System.Windows.Forms.Button();
             this.OutputAdd = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.OutputPOCombo = new System.Windows.Forms.ComboBox();
+            this.OutputInputCombo = new System.Windows.Forms.ComboBox();
+            this.OutputTNCombo = new System.Windows.Forms.ComboBox();
+            this.OutputNameCombo = new System.Windows.Forms.ComboBox();
             this.OutputOnce = new System.Windows.Forms.CheckBox();
             this.OutputDelay = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
-            this.OutputParameter = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.OutputInputName = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.OutputTargetName = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.OutputName = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.OutputsList = new System.Windows.Forms.ListView();
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -95,11 +94,12 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.FlagsTable = new System.Windows.Forms.CheckedListBox();
             this.VisgroupTab = new System.Windows.Forms.TabPage();
             this.EditVisgroupsButton = new System.Windows.Forms.Button();
-            this.VisgroupPanel = new Sledge.Editor.Visgroups.VisgroupPanel();
             this.label11 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
             this.OkButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.Angles = new Sledge.Editor.UI.AngleControl();
+            this.VisgroupPanel = new Sledge.Editor.Visgroups.VisgroupPanel();
             this.Tabs.SuspendLayout();
             this.ClassInfoTab.SuspendLayout();
             this.OutputsTab.SuspendLayout();
@@ -344,16 +344,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.label1.Text = "Class:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // Angles
-            // 
-            this.Angles.Location = new System.Drawing.Point(553, 6);
-            this.Angles.Name = "Angles";
-            this.Angles.ShowLabel = false;
-            this.Angles.ShowTextBox = true;
-            this.Angles.Size = new System.Drawing.Size(115, 46);
-            this.Angles.TabIndex = 0;
-            this.Angles.AngleChangedEvent += new Sledge.Editor.UI.AngleControl.AngleChangedEventHandler(this.AnglesChanged);
-            // 
             // OutputsTab
             // 
             this.OutputsTab.Controls.Add(this.OutputDelete);
@@ -378,9 +368,11 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.OutputDelete.TabIndex = 6;
             this.OutputDelete.Text = "Delete";
             this.OutputDelete.UseVisualStyleBackColor = true;
+            this.OutputDelete.Click += new System.EventHandler(this.OutputDelete_Click);
             // 
             // OutputPaste
             // 
+            this.OutputPaste.Enabled = false;
             this.OutputPaste.Location = new System.Drawing.Point(512, 205);
             this.OutputPaste.Name = "OutputPaste";
             this.OutputPaste.Size = new System.Drawing.Size(75, 23);
@@ -390,6 +382,7 @@ namespace Sledge.Editor.UI.ObjectProperties
             // 
             // OutputCopy
             // 
+            this.OutputCopy.Enabled = false;
             this.OutputCopy.Location = new System.Drawing.Point(431, 205);
             this.OutputCopy.Name = "OutputCopy";
             this.OutputCopy.Size = new System.Drawing.Size(75, 23);
@@ -405,19 +398,20 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.OutputAdd.TabIndex = 6;
             this.OutputAdd.Text = "Add";
             this.OutputAdd.UseVisualStyleBackColor = true;
+            this.OutputAdd.Click += new System.EventHandler(this.OutputAdd_Click);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.OutputPOCombo);
+            this.groupBox1.Controls.Add(this.OutputInputCombo);
+            this.groupBox1.Controls.Add(this.OutputTNCombo);
+            this.groupBox1.Controls.Add(this.OutputNameCombo);
             this.groupBox1.Controls.Add(this.OutputOnce);
             this.groupBox1.Controls.Add(this.OutputDelay);
             this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.OutputParameter);
             this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.OutputInputName);
             this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.OutputTargetName);
             this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.OutputName);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Location = new System.Drawing.Point(6, 205);
             this.groupBox1.Name = "groupBox1";
@@ -425,6 +419,39 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Edit Entry";
+            // 
+            // OutputPOCombo
+            // 
+            this.OutputPOCombo.FormattingEnabled = true;
+            this.OutputPOCombo.Location = new System.Drawing.Point(115, 92);
+            this.OutputPOCombo.Name = "OutputPOCombo";
+            this.OutputPOCombo.Size = new System.Drawing.Size(197, 21);
+            this.OutputPOCombo.TabIndex = 7;
+            // 
+            // OutputInputCombo
+            // 
+            this.OutputInputCombo.FormattingEnabled = true;
+            this.OutputInputCombo.Location = new System.Drawing.Point(115, 66);
+            this.OutputInputCombo.Name = "OutputInputCombo";
+            this.OutputInputCombo.Size = new System.Drawing.Size(197, 21);
+            this.OutputInputCombo.TabIndex = 6;
+            // 
+            // OutputTNCombo
+            // 
+            this.OutputTNCombo.FormattingEnabled = true;
+            this.OutputTNCombo.Location = new System.Drawing.Point(115, 40);
+            this.OutputTNCombo.Name = "OutputTNCombo";
+            this.OutputTNCombo.Size = new System.Drawing.Size(197, 21);
+            this.OutputTNCombo.TabIndex = 5;
+            this.OutputTNCombo.SelectedIndexChanged += new System.EventHandler(this.OutputTargetNameChoose);
+            // 
+            // OutputNameCombo
+            // 
+            this.OutputNameCombo.FormattingEnabled = true;
+            this.OutputNameCombo.Location = new System.Drawing.Point(115, 15);
+            this.OutputNameCombo.Name = "OutputNameCombo";
+            this.OutputNameCombo.Size = new System.Drawing.Size(197, 21);
+            this.OutputNameCombo.TabIndex = 4;
             // 
             // OutputOnce
             // 
@@ -462,13 +489,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.label10.Text = "Delay (seconds):";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // OutputParameter
-            // 
-            this.OutputParameter.Location = new System.Drawing.Point(115, 94);
-            this.OutputParameter.Name = "OutputParameter";
-            this.OutputParameter.Size = new System.Drawing.Size(197, 20);
-            this.OutputParameter.TabIndex = 1;
-            // 
             // label9
             // 
             this.label9.Location = new System.Drawing.Point(6, 94);
@@ -477,13 +497,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.label9.TabIndex = 0;
             this.label9.Text = "Parameter Override:";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // OutputInputName
-            // 
-            this.OutputInputName.Location = new System.Drawing.Point(115, 68);
-            this.OutputInputName.Name = "OutputInputName";
-            this.OutputInputName.Size = new System.Drawing.Size(197, 20);
-            this.OutputInputName.TabIndex = 1;
             // 
             // label8
             // 
@@ -494,13 +507,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.label8.Text = "Input:";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // OutputTargetName
-            // 
-            this.OutputTargetName.Location = new System.Drawing.Point(115, 42);
-            this.OutputTargetName.Name = "OutputTargetName";
-            this.OutputTargetName.Size = new System.Drawing.Size(197, 20);
-            this.OutputTargetName.TabIndex = 1;
-            // 
             // label7
             // 
             this.label7.Location = new System.Drawing.Point(6, 42);
@@ -509,13 +515,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.label7.TabIndex = 0;
             this.label7.Text = "Target Name:";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // OutputName
-            // 
-            this.OutputName.Location = new System.Drawing.Point(115, 16);
-            this.OutputName.Name = "OutputName";
-            this.OutputName.Size = new System.Drawing.Size(197, 20);
-            this.OutputName.TabIndex = 1;
             // 
             // label6
             // 
@@ -652,8 +651,8 @@ namespace Sledge.Editor.UI.ObjectProperties
             // VisgroupTab
             // 
             this.VisgroupTab.Controls.Add(this.EditVisgroupsButton);
-            this.VisgroupTab.Controls.Add(this.VisgroupPanel);
             this.VisgroupTab.Controls.Add(this.label11);
+            this.VisgroupTab.Controls.Add(this.VisgroupPanel);
             this.VisgroupTab.Location = new System.Drawing.Point(4, 22);
             this.VisgroupTab.Name = "VisgroupTab";
             this.VisgroupTab.Padding = new System.Windows.Forms.Padding(3);
@@ -672,21 +671,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.EditVisgroupsButton.Text = "Edit Visgroups";
             this.EditVisgroupsButton.UseVisualStyleBackColor = true;
             this.EditVisgroupsButton.Click += new System.EventHandler(this.EditVisgroupsClicked);
-            // 
-            // VisgroupPanel
-            // 
-            this.VisgroupPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.VisgroupPanel.DisableAutomatic = true;
-            this.VisgroupPanel.HideAutomatic = false;
-            this.VisgroupPanel.Location = new System.Drawing.Point(6, 26);
-            this.VisgroupPanel.Name = "VisgroupPanel";
-            this.VisgroupPanel.ShowCheckboxes = true;
-            this.VisgroupPanel.ShowHidden = false;
-            this.VisgroupPanel.Size = new System.Drawing.Size(662, 319);
-            this.VisgroupPanel.SortAutomaticFirst = false;
-            this.VisgroupPanel.TabIndex = 2;
             // 
             // label11
             // 
@@ -727,7 +711,32 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.ApplyButtonClicked);
             // 
-            // EntityEditor
+            // Angles
+            // 
+            this.Angles.Location = new System.Drawing.Point(553, 6);
+            this.Angles.Name = "Angles";
+            this.Angles.ShowLabel = false;
+            this.Angles.ShowTextBox = true;
+            this.Angles.Size = new System.Drawing.Size(115, 46);
+            this.Angles.TabIndex = 0;
+            this.Angles.AngleChangedEvent += new Sledge.Editor.UI.AngleControl.AngleChangedEventHandler(this.AnglesChanged);
+            // 
+            // VisgroupPanel
+            // 
+            this.VisgroupPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.VisgroupPanel.DisableAutomatic = true;
+            this.VisgroupPanel.HideAutomatic = false;
+            this.VisgroupPanel.Location = new System.Drawing.Point(6, 26);
+            this.VisgroupPanel.Name = "VisgroupPanel";
+            this.VisgroupPanel.ShowCheckboxes = true;
+            this.VisgroupPanel.ShowHidden = false;
+            this.VisgroupPanel.Size = new System.Drawing.Size(662, 319);
+            this.VisgroupPanel.SortAutomaticFirst = false;
+            this.VisgroupPanel.TabIndex = 2;
+            // 
+            // ObjectPropertiesDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -749,7 +758,6 @@ namespace Sledge.Editor.UI.ObjectProperties
             this.ClassInfoTab.PerformLayout();
             this.OutputsTab.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.OutputDelay)).EndInit();
             this.InputsTab.ResumeLayout(false);
             this.FlagsTab.ResumeLayout(false);
@@ -777,13 +785,9 @@ namespace Sledge.Editor.UI.ObjectProperties
 		private System.Windows.Forms.ColumnHeader columnHeader5;
 		private System.Windows.Forms.ListView OutputsList;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.TextBox OutputName;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.TextBox OutputTargetName;
 		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.TextBox OutputInputName;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.TextBox OutputParameter;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.NumericUpDown OutputDelay;
 		private System.Windows.Forms.CheckBox OutputOnce;
@@ -821,5 +825,9 @@ namespace Sledge.Editor.UI.ObjectProperties
         private System.Windows.Forms.Button button1;
         private Visgroups.VisgroupPanel VisgroupPanel;
         private System.Windows.Forms.Button EditVisgroupsButton;
-	}
+        private System.Windows.Forms.ComboBox OutputPOCombo;
+        private System.Windows.Forms.ComboBox OutputInputCombo;
+        private System.Windows.Forms.ComboBox OutputTNCombo;
+        private System.Windows.Forms.ComboBox OutputNameCombo;
+    }
 }

@@ -88,9 +88,11 @@ namespace Sledge.Editor.Extensions
                     cache.Add(model, mr);
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
                     // Couldn't load
+                    Console.WriteLine("Couldn't create model reference!!!");
+                    Console.WriteLine(ex.ToString());
                     cache.Add(model, null);
                     return updatedChildren;
                 }
@@ -105,16 +107,18 @@ namespace Sledge.Editor.Extensions
         private static string GetModelName(Entity entity)
         {
             if (entity.GameData == null) return null;
+
             var studio = entity.GameData.Behaviours.FirstOrDefault(x => String.Equals(x.Name, "studio", StringComparison.InvariantCultureIgnoreCase))
                          ?? entity.GameData.Behaviours.FirstOrDefault(x => String.Equals(x.Name, "sprite", StringComparison.InvariantCultureIgnoreCase));
-            if (studio == null) return null;
-
-            // First see if the studio behaviour forces a model...
-            if (String.Equals(studio.Name, "studio", StringComparison.InvariantCultureIgnoreCase)
-                && studio.Values.Count == 1 && !String.IsNullOrWhiteSpace(studio.Values[0]))
+            if (studio != null)
             {
-                return studio.Values[0].Trim();
-            }
+                // First see if the studio behaviour forces a model...
+                if (String.Equals(studio.Name, "studio", StringComparison.InvariantCultureIgnoreCase)
+                    && studio.Values.Count == 1 && !String.IsNullOrWhiteSpace(studio.Values[0]))
+                {
+                    return studio.Values[0].Trim();
+                }
+            }            
 
             // Find the first property that is a studio type, or has a name of "model"...
             var prop = entity.GameData.Properties.FirstOrDefault(x => x.VariableType == VariableType.Studio);

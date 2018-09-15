@@ -16,6 +16,8 @@ namespace Sledge.Providers.Texture
         private readonly List<TexturePackage> _packages;
         private readonly Dictionary<string, TextureItem> _items;
 
+        public int GameId { get; set; }
+
         public TextureItem SelectedTexture
         {
             get { return _selectedTexture; }

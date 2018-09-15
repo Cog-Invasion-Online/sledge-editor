@@ -185,6 +185,7 @@ namespace Sledge.Editor.Tools.TextureTool
                 if (!properties.DifferentXShiftValues) face.Texture.XShift = properties.XShift;
                 if (!properties.DifferentYShiftValues) face.Texture.YShift = properties.YShift;
                 if (!properties.DifferentRotationValues) face.SetTextureRotation(properties.Rotation);
+                if (!properties.DifferentLightmapScaleValues) face.Texture.LightmapScale = properties.LightmapScale;
                 face.CalculateTextureCoordinates(false);
             };
 
@@ -361,6 +362,7 @@ namespace Sledge.Editor.Tools.TextureTool
                                                                 face.Texture.XShift = _form.CurrentProperties.XShift;
                                                                 face.Texture.YShift = _form.CurrentProperties.YShift;
                                                                 face.SetTextureRotation(_form.CurrentProperties.Rotation);
+                                                                face.Texture.LightmapScale = _form.CurrentProperties.LightmapScale;
                                                             }
                                                             else
                                                             {

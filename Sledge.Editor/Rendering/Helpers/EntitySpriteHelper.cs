@@ -87,8 +87,8 @@ namespace Sledge.Editor.Rendering.Helpers
 
             GL.Begin(PrimitiveType.Quads);
 
-            GL.Normal3(normal); GL.TexCoord2(1, 1); GL.Vertex3(Vector3.Subtract(orig, Vector3.Add(tup, tright)));
-            GL.Normal3(normal); GL.TexCoord2(1, 0); GL.Vertex3(Vector3.Add(orig, Vector3.Subtract(tup, tright)));
+            GL.Normal3(normal); GL.TexCoord2(-1, 1); GL.Vertex3(Vector3.Subtract(orig, Vector3.Add(tup, tright)));
+            GL.Normal3(normal); GL.TexCoord2(-1, 0); GL.Vertex3(Vector3.Add(orig, Vector3.Subtract(tup, tright)));
             GL.Normal3(normal); GL.TexCoord2(0, 0); GL.Vertex3(Vector3.Add(orig, Vector3.Add(tup, tright)));
             GL.Normal3(normal); GL.TexCoord2(0, 1); GL.Vertex3(Vector3.Subtract(orig, Vector3.Subtract(tup, tright)));
 

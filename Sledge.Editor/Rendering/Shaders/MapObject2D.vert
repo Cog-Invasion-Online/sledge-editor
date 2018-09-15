@@ -9,6 +9,7 @@ layout(location = 4) in float selected;
 varying vec4 vertexColour;
 varying float vertexSelected;
 
+uniform mat4 transformation;
 uniform mat4 modelViewMatrix;
 uniform mat4 perspectiveMatrix;
 uniform mat4 cameraMatrix;
@@ -18,7 +19,7 @@ void main()
 {
     vec4 pos = vec4(position, 1);
     if (selected > 0.9) pos = selectionTransform * pos;
-    vec4 modelPos = modelViewMatrix * pos;
+    vec4 modelPos = modelViewMatrix * pos * transformation;
     
 	vec4 cameraPos = cameraMatrix * modelPos;
 	gl_Position = perspectiveMatrix * cameraPos;

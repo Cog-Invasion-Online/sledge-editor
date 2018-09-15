@@ -47,8 +47,16 @@ namespace Sledge.Providers.Texture
         public abstract void LoadTextures(IEnumerable<TextureItem> items);
         public abstract ITextureStreamSource GetStreamSource(int maxWidth, int maxHeight, IEnumerable<TexturePackage> packages);
 
-        public static TextureCollection CreateCollection(IEnumerable<string> sourceRoots, IEnumerable<string> additionalPackages, IEnumerable<string> blacklist, IEnumerable<string> whitelist)
+        public static TextureCollection CreateCollection(int gameId, IEnumerable<string> sourceRoots, IEnumerable<string> additionalPackages, IEnumerable<string> blacklist, IEnumerable<string> whitelist)
         {
+            foreach (TextureCollection coll in Collections)
+            {
+                if (coll.GameId == gameId)
+                {
+                    return coll;
+                }
+            }
+
             var list = sourceRoots.ToList();
             var additional = additionalPackages == null ? new List<string>() : additionalPackages.ToList();
             var wl = whitelist == null ? new List<string>() : whitelist.ToList();
@@ -59,6 +67,7 @@ namespace Sledge.Providers.Texture
                 pkgs.AddRange(provider.CreatePackages(list, additional, bl, wl));
             }
             var tc = new TextureCollection(pkgs);
+            tc.GameId = gameId;
             Packages.AddRange(pkgs);
             Collections.Add(tc);
             return tc;

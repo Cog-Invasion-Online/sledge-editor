@@ -223,16 +223,21 @@ namespace Sledge.DataStructures.Geometric
             return left * right.Inverse();
         }
 
+        private static float Deg2Rad(float deg)
+        {
+            return (float)(Math.PI / 180) * deg;
+        }
+
         public static QuaternionF EulerAngles(CoordinateF angles)
         {
             // http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternionF/index.htm
             angles = angles / 2;
-            var sy = (float) Math.Sin(angles.Z);
-            var sp = (float) Math.Sin(angles.Y);
-            var sr = (float) Math.Sin(angles.X);
-            var cy = (float) Math.Cos(angles.Z);
-            var cp = (float) Math.Cos(angles.Y);
-            var cr = (float) Math.Cos(angles.X);
+            var sy = (float) Math.Sin(Deg2Rad(angles.Z));
+            var sp = (float) Math.Sin(Deg2Rad(angles.Y));
+            var sr = (float) Math.Sin(Deg2Rad(angles.X));
+            var cy = (float) Math.Cos(Deg2Rad(angles.Z));
+            var cp = (float) Math.Cos(Deg2Rad(angles.Y));
+            var cr = (float) Math.Cos(Deg2Rad(angles.X));
             return new QuaternionF(sr * cp * cy - cr * sp * sy,
                                   cr * sp * cy + sr * cp * sy,
                                   cr * cp * sy - sr * sp * cy,

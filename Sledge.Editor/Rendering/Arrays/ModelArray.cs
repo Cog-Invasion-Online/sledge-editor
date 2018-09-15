@@ -12,6 +12,7 @@ namespace Sledge.Editor.Rendering.Arrays
     public class ModelArray : VBO<Model, MapObjectVertex>
     {
         private const int Textured = 0;
+        private const int Wireframe = 1;
 
         public ModelArray(Model model)
             : base(new []{ model })
@@ -27,6 +28,14 @@ namespace Sledge.Editor.Rendering.Arrays
             }
         }
 
+        public void RenderWireframe(IGraphicsContext context)
+        {
+            foreach (var subset in GetSubsets(Wireframe))
+            {
+                Render(context, PrimitiveType.Lines, subset);
+            }
+        }
+
         protected override void CreateArray(IEnumerable<Model> objects)
         {
             foreach (var model in objects)
@@ -38,7 +47,7 @@ namespace Sledge.Editor.Rendering.Arrays
                 foreach (var g in model.GetActiveMeshes().GroupBy(x => x.SkinRef))
                 {
                     StartSubset(Textured);
-                    var tex = model.Textures[g.Key];
+                    StartSubset(Wireframe);
 
                     foreach (var mesh in g)
                     {
@@ -59,10 +68,19 @@ namespace Sledge.Editor.Rendering.Arrays
                                 }
                             });
                             PushIndex(Textured, index, new[] {(uint) 0});
+                            PushIndex(Wireframe, index, new[] { (uint)0 });
                         }
                     }
-                    PushSubset(Textured, tex.TextureObject);
+                    if (model.Textures.Count > 0)
+                    {
+                        var tex = model.Textures[g.Key];
+                        PushSubset(Textured, tex.TextureObject);
+                    }
+                    PushSubset(Wireframe, (object)null);
                 }
+
+                
+
             }
         }
     }

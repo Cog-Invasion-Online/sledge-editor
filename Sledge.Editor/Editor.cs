@@ -146,10 +146,11 @@ namespace Sledge.Editor
             MapProvider.Register(new ObjProvider());
             GameDataProvider.Register(new FgdProvider());
             //TextureProvider.Register(new WadProvider());
-            //TextureProvider.Register(new SprProvider());
+            TextureProvider.Register(new SprProvider());
             //TextureProvider.Register(new VmtProvider());
             TextureProvider.Register(new PmtProvider());
             ModelProvider.Register(new MdlProvider());
+            ModelProvider.Register(new BamProvider());
 
             //WadProvider.ReplaceTransparentPixels = !Sledge.Settings.View.DisableWadTransparency && !Sledge.Settings.View.GloballyDisableTransparency;
             TextureHelper.EnableTransparency = !Sledge.Settings.View.GloballyDisableTransparency;

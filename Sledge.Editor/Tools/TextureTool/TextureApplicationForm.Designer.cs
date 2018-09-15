@@ -558,31 +558,19 @@ namespace Sledge.Editor.Tools.TextureTool
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(59, 25);
             this.label8.TabIndex = 16;
-            this.label8.Text = "Lightmap";
+            this.label8.Text = "Lightmap Scale";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LightmapValue
             // 
-            this.LightmapValue.Enabled = false;
+            this.LightmapValue.Enabled = true;
             this.LightmapValue.Location = new System.Drawing.Point(239, 43);
-            this.LightmapValue.Maximum = new decimal(new int[] {
-            512,
-            0,
-            0,
-            0});
-            this.LightmapValue.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.LightmapValue.Maximum = 16;
+            this.LightmapValue.Minimum = 4;
             this.LightmapValue.Name = "LightmapValue";
             this.LightmapValue.Size = new System.Drawing.Size(58, 20);
             this.LightmapValue.TabIndex = 19;
-            this.LightmapValue.Value = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
+            this.LightmapValue.Value = 16;
             this.LightmapValue.ValueChanged += new System.EventHandler(this.LightmapValueChanged);
             this.LightmapValue.Enter += new System.EventHandler(this.FocusTextInControl);
             // 

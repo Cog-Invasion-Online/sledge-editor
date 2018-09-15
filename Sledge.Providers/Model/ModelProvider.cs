@@ -64,10 +64,13 @@ namespace Sledge.Providers.Model
             var path = file.FullPathName;
             if (Models.ContainsKey(path)) return Models[path];
 
+            Console.WriteLine("LoadModel: {0}", path);
+
             if (!file.Exists) throw new ProviderException("The supplied file doesn't exist.");
             var provider = RegisteredProviders.FirstOrDefault(p => p.IsValidForFile(file));
             if (provider != null)
             {
+                Console.WriteLine("Provider is: {0}", provider.ToString());
                 var model = provider.LoadFromFile(file);
                 model.PreprocessModel();
                 for (var i = 0; i < model.Textures.Count; i++)

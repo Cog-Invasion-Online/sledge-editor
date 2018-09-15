@@ -21,6 +21,7 @@ namespace Sledge.Editor.UI.ObjectProperties
         public static bool IsShowing { get { return _numOpen > 0; } }
 
         private List<TableValue> _values;
+        bool _outputsChanged;
 
         private readonly Dictionary<VariableType, SmartEditControl> _smartEditControls;
         private readonly SmartEditControl _dumbEditControl;
@@ -57,6 +58,7 @@ namespace Sledge.Editor.UI.ObjectProperties
             RegisterSmartEditControls();
 
             FollowSelection = true;
+            _outputsChanged = false;
         }
 
         private void RegisterSmartEditControls()
@@ -180,6 +182,26 @@ namespace Sledge.Editor.UI.ObjectProperties
                         // No change if indeterminate
                     }
                     if (entityData.Flags != beforeFlags) changed = true;
+                }
+
+                if (_outputsChanged)
+                {
+                    entityData.Outputs.Clear();
+                    foreach(ListViewItem item in OutputsList.Items)
+                    {
+                        Output op = new Output()
+                        {
+                            Name = item.SubItems[0].Text,
+                            Target = item.SubItems[1].Text,
+                            Input = item.SubItems[2].Text,
+                            Parameter = "",
+                            Delay = Convert.ToDecimal(item.SubItems[4].Text),
+                            OnceOnly = item.SubItems[5].Text == "Yes"
+                        };
+                        entityData.Outputs.Add(op);
+                    }
+                    changed = true;
+                    _outputsChanged = false;
                 }
 
                 if (changed) action.AddEntity(entity, entityData);
@@ -341,7 +363,7 @@ namespace Sledge.Editor.UI.ObjectProperties
             }
             else
             {
-                // Source
+                // Source/Panda3D
                 if (!Tabs.TabPages.Contains(InputsTab)) Tabs.TabPages.Insert(1, InputsTab);
                 if (!Tabs.TabPages.Contains(OutputsTab)) Tabs.TabPages.Insert(2, OutputsTab);
             }
@@ -388,6 +410,8 @@ namespace Sledge.Editor.UI.ObjectProperties
             _populating = false;
 
             UpdateKeyValues();
+
+            ResetIO();
         }
 
         private void PopulateFlags(string className, List<int> flags)
@@ -431,6 +455,92 @@ namespace Sledge.Editor.UI.ObjectProperties
             else KeyValuesListSelectedIndexChanged(null, null);
 
             _populating = false;
+        }
+
+        private IEnumerable<string> GetAvailableTargetNames()
+        {
+            Entity ent = (Entity)Objects[0];
+            string entname = ent.GetEntityData().GetPropertyValue("targetname");
+
+            IEnumerable<string> result = Document.Map.WorldSpawn.Find(x => x.GetEntityData() != null)
+                .Select(x => x.GetEntityData().GetPropertyValue("targetname"))
+                .Where(x => !String.IsNullOrWhiteSpace(x))
+                .Distinct()
+                .Where(x => x != entname )
+                .OrderBy(x => x.ToLowerInvariant());
+
+            return result;
+        }
+
+        private void OutputTargetNameChoose(object sender, EventArgs args)
+        {
+            string targetname = OutputTNCombo.GetItemText(OutputTNCombo.Items[OutputTNCombo.SelectedIndex]);
+            IEnumerable<Entity> ents = Document.Map.WorldSpawn.Find(x => x.GetEntityData() != null && x.GetEntityData().GetPropertyValue("targetname") == targetname).OfType<Entity>();
+            Entity ent = ents.ElementAt(0);
+            GameDataObject data = ent.GameData;
+
+            OutputInputCombo.Items.Clear();
+            foreach (IO io in data.InOuts)
+            {
+                if (io.IOType == IOType.Input)
+                {
+                    OutputInputCombo.Items.Add(io.Name);
+                }
+            }
+        }
+
+        private void ResetIO()
+        {
+            OutputNameCombo.Items.Clear();
+            OutputInputCombo.Items.Clear();
+            OutputPOCombo.Items.Clear();
+            OutputPOCombo.Enabled = false;
+            OutputTNCombo.Items.Clear();
+            OutputDelay.Value = (decimal)0.0;
+            OutputOnce.Checked = false;
+            OutputsList.Items.Clear();
+            InputsList.Items.Clear();
+            _outputsChanged = false;
+
+            if (Objects.Count > 1 || !(Objects[0] is Entity))
+            {
+                return;
+            }
+
+            Entity ent = (Entity)Objects[0];
+            GameDataObject data = ent.GameData;
+            if (data == null || data.InOuts == null)
+            {
+                return;
+            }
+
+            foreach (IO io in data.InOuts)
+            {
+                if (io.IOType == IOType.Output)
+                {
+                    OutputNameCombo.Items.Add(io.Name);
+                }
+            }
+
+            IEnumerable<string> targets = GetAvailableTargetNames();
+            foreach (string str in targets)
+            {
+                OutputTNCombo.Items.Add(str);
+            }
+
+            foreach (Output op in ent.EntityData.Outputs)
+            {
+                ListViewItem item = new ListViewItem(new string[] {
+                op.Name,
+                op.Target,
+                op.Input,
+                "None",
+                op.Delay.ToString("F2"),
+                op.OnceOnly ? "Yes" : "No"
+                });
+                OutputsList.Items.Add(item);
+            }
+            
         }
 
         private void SmartEditToggled(object sender, EventArgs e)
@@ -703,6 +813,30 @@ namespace Sledge.Editor.UI.ObjectProperties
         {
             Apply();
             Close();
+        }
+
+        private void OutputAdd_Click(object sender, EventArgs e)
+        {
+            ListViewItem item = new ListViewItem(new string[] { OutputNameCombo.GetItemText(OutputNameCombo.SelectedItem),
+            OutputTNCombo.GetItemText(OutputTNCombo.SelectedItem),
+            OutputInputCombo.GetItemText(OutputInputCombo.SelectedItem),
+            "None",
+            OutputDelay.Value.ToString("F2"),
+            OutputOnce.Checked ? "Yes" : "No"
+            });
+            OutputsList.Items.Add(item);
+
+            _outputsChanged = true;
+        }
+
+        private void OutputDelete_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in OutputsList.SelectedItems)
+            {
+                OutputsList.Items.Remove(item);
+            }
+
+            _outputsChanged = true;
         }
     }
 }

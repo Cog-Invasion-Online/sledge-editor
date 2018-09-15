@@ -12,10 +12,12 @@ namespace Sledge.Editor.Logging
     {
         public static void ShowException(Exception ex, string message = "")
         {
-            var info = new ExceptionInfo(ex, message);
-            var window = new ExceptionWindow(info);
-            if (Editor.Instance == null || Editor.Instance.IsDisposed) window.Show();
-            else window.Show(Editor.Instance);
+            //var info = new ExceptionInfo(ex, message);
+            //var window = new ExceptionWindow(info);
+            //if (Editor.Instance == null || Editor.Instance.IsDisposed) window.Show();
+            //else window.Show(Editor.Instance);
+            Console.WriteLine("Exception encountered:");
+            Console.WriteLine(ex.ToString());
         }
     }
 

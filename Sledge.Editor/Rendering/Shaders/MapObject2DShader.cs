@@ -18,6 +18,7 @@ namespace Sledge.Editor.Rendering.Shaders
         public Matrix4 ModelView { set { Shader.Set("modelViewMatrix", value); } }
 
         public Matrix4 SelectionTransform { set { Shader.Set("selectionTransform", value); } }
+        public Matrix4 Transformation { set { Shader.Set("transformation", value); } }
 
         private ShaderProgram Shader { get; set; }
 
@@ -33,6 +34,7 @@ namespace Sledge.Editor.Rendering.Shaders
             SelectedOnly = UnselectedOnly = false;
             SelectedColour = new Vector4(1, 0, 0, 0.5f);
             OverrideColour = new Vector4(0, 0, 0, 0);
+            Transformation = Matrix4.Identity;
 
             Shader.Unbind();
         }

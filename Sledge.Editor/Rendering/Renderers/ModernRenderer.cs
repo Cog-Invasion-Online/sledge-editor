@@ -118,6 +118,33 @@ namespace Sledge.Editor.Rendering.Renderers
             _array.RenderWireframe(context.Context);
             _decalArray.RenderWireframe(context.Context);
 
+            if (!Sledge.Settings.View.DisableModelRendering)
+            {
+                foreach (var tuple in _models)
+                {
+                    if (!_modelArrays.ContainsKey(tuple.Item2))
+                    {
+                        continue;
+                    }
+                    var arr = _modelArrays[tuple.Item2];
+                    var origin = tuple.Item1.Origin;
+
+
+                    var angles = tuple.Item1.EntityData.GetPropertyCoordinate("angles", Coordinate.Zero);
+                    angles = new Coordinate(-DMath.DegreesToRadians(angles.Z), DMath.DegreesToRadians(angles.X),
+                                            -DMath.DegreesToRadians(angles.Y));
+                    if (tuple.Item1.IsSelected)
+                    {
+                        origin *= _selectionTransformMat;
+                        // TODO: rotation/angles
+                    }
+                    var tform = Matrix.Rotation(Quaternion.EulerAngles(angles)).Translate(origin);
+                    _mapObject2DShader.Transformation = tform.ToGLSLMatrix4();
+                    arr.RenderWireframe(context.Context);
+                }
+                _mapObject2DShader.Transformation = Matrix4.Identity;
+            }
+
             if (Sledge.Settings.View.Draw2DVertices)
             {
                 if (Sledge.Settings.View.OverrideVertexColour)
@@ -185,9 +212,17 @@ namespace Sledge.Editor.Rendering.Renderers
                 {
                     foreach (var tuple in _models)
                     {
+                        if (!_modelArrays.ContainsKey(tuple.Item2))
+                        {
+                            continue;
+                        }
                         var arr = _modelArrays[tuple.Item2];
                         var origin = tuple.Item1.Origin;
-                        if (tuple.Item1.HideDistance() <= (location - origin).VectorMagnitude()) continue;
+                        if (tuple.Item1.HideDistance() <= (location - origin).VectorMagnitude())
+                        {
+                            continue;
+                        }
+                        
 
                         var angles = tuple.Item1.EntityData.GetPropertyCoordinate("angles", Coordinate.Zero);
                         angles = new Coordinate(-DMath.DegreesToRadians(angles.Z), DMath.DegreesToRadians(angles.X),

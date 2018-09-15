@@ -11,56 +11,27 @@ using Sledge.Packages.Vpk;
 
 namespace Sledge.Providers.Texture
 {
-    // Panda material file... lol
+    // Provides an interface to find and load Panda textures (jpg or png) into Sledge.
+    // It's PMT meaning Panda Material, but it's just loading regular texture files.
     public class PmtProvider : TextureProvider
     {
         private readonly Dictionary<TexturePackage, QuickRoot> _roots = new Dictionary<TexturePackage, QuickRoot>();
 
+        static string[] _extensions = new string[] { ".jpg", ".png" };
+
         public override IEnumerable<TexturePackage> CreatePackages(IEnumerable<string> sourceRoots, IEnumerable<string> additionalPackages, IEnumerable<string> blacklist, IEnumerable<string> whitelist)
         {
-            var blist = blacklist.Select(x => x.TrimEnd('/', '\\')).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
-            var wlist = whitelist.Select(x => x.TrimEnd('/', '\\')).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
-
             // For panda don't use the source roots, only the additional packages for texture directories.
             var roots = additionalPackages.ToList();
-
-            foreach (string root in roots)
-            {
-                Console.WriteLine(root);
-            }
             
             var packages = new Dictionary<string, TexturePackage>();
 
-            var types = new HashSet<string>
-            {
-                "unlitgeneric",
-                "lightmappedgeneric",
-                "lightmappedreflective",
-                "water",
-                "sprite",
-                "decalmodulate",
-                "modulate",
-                "subrect",
-                "worldvertextransition",
-                "lightmapped_4wayblend",
-                "unlittwotexture",
-                "worldtwotextureblend",
-                "skyfog"
-            };
-
             var packageRoot = String.Join(";", roots);
 
-            string[] extensions = { ".jpg", ".png" };
-
-            //var pmtRoot = new QuickRoot(roots, add, "./", ".pmt");
-            var texRoot = new QuickRoot(roots, new List<string>(), "./", extensions.ToList());
-
-            const StringComparison ctype = StringComparison.InvariantCultureIgnoreCase;
+            var texRoot = new QuickRoot(roots, "./");
 
             foreach (string tex in texRoot.GetFiles())
             {
-                
-
                 Stream str = texRoot.OpenFile(tex);
                 if (str == null)
                 {
@@ -88,12 +59,22 @@ namespace Sledge.Providers.Texture
             return packages.Values;
         }
 
-        private TextureFlags GetFlags(GenericStructure vmt)
+        private static string[] GetExtensions()
         {
-            var flags = TextureFlags.None;
-            var tp = vmt.PropertyInteger("$translucent") + vmt.PropertyInteger("$alphatest");
-            if (tp > 0) flags |= TextureFlags.Transparent;
-            return flags;
+            return _extensions;
+        }
+
+        public static bool HasExtension(string path)
+        {
+            foreach (string ext in _extensions)
+            {
+                if (path.EndsWith(ext))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public override void DeletePackages(IEnumerable<TexturePackage> packages)
@@ -170,7 +151,7 @@ namespace Sledge.Providers.Texture
 
                 using (stream)
                 {
-                    return GetBitmap(stream);// Vtf.VtfProvider.GetImage(stream, _maxWidth, _maxHeight);
+                    return GetBitmap(stream);
                 }
             }
             
@@ -185,13 +166,12 @@ namespace Sledge.Providers.Texture
             private readonly List<string> _roots;
             private readonly List<string> _files;
             private readonly string _baseFolder;
-            private readonly List<string> _extensions;
-            private List<string> _extras;
+            private readonly List<string> _lExtensions;
 
-            public QuickRoot(IEnumerable<string> roots, IEnumerable<string> additional, string baseFolder, List<string> extensions)
+            public QuickRoot(IEnumerable<string> roots, string baseFolder)
             {
                 _baseFolder = baseFolder;
-                _extensions = extensions;
+                _lExtensions = _extensions.ToList();
                 _roots = roots.ToList();
                 var streams = _roots
                     .Where(Directory.Exists)
@@ -200,10 +180,9 @@ namespace Sledge.Providers.Texture
                     .AsParallel()
                     .Select(x => new { Directory = x })
                     .ToList();
-                _extras = additional.Select(x => Directory.Exists(Path.Combine(x, baseFolder)) ? Path.Combine(x, baseFolder) : x).Where(Directory.Exists).ToList();
                 _files = new List<string>();
 
-                foreach (string extension in extensions)
+                foreach (string extension in _lExtensions)
                 {
                     foreach (string root in _roots)
                     {
@@ -216,21 +195,6 @@ namespace Sledge.Providers.Texture
                         }
                     }
 
-                    /*
-                    //Console.WriteLine(Path.Combine(_roots[0], baseFolder, "*" + extension));
-                    Console.WriteLine(Directory.Exists(Path.Combine(_roots[0], baseFolder)));
-                    string[] testFiles = Directory.GetFiles(Path.Combine(_roots[0], baseFolder), "*" + extension, SearchOption.AllDirectories);
-                    foreach (string tfile in testFiles)
-                    {
-                        Console.WriteLine(tfile);
-                    }
-                    _files
-                    .Union(_roots.Where(x => Directory.Exists(Path.Combine(x, baseFolder)))
-                        .SelectMany(x => Directory.GetFiles(Path.Combine(x, baseFolder), "*" + extension, SearchOption.AllDirectories)
-                            .Select(f => MakeRelative(x, f))))
-                    .Union(_extras.SelectMany(x => Directory.GetFiles(x, "*" + extension, SearchOption.AllDirectories)
-                        .Select(f => MakeRelative(x, f)))
-                     */
                     _files
                        .GroupBy(x => x)
                        .ToList();
@@ -261,11 +225,6 @@ namespace Sledge.Providers.Texture
             private string StripBase(string path)
             {
                 if (path.StartsWith(_baseFolder)) path = path.Substring(_baseFolder.Length);
-                foreach (string extension in _extensions)
-                {
-                    if (path.EndsWith(extension))
-                        path = path.Substring(0, path.Length - extension.Length);
-                }
                 
                 return path.TrimStart('/');
             }
@@ -275,13 +234,33 @@ namespace Sledge.Providers.Texture
                 return _files;
             }
 
+            public bool HasFileExtension(string path)
+            {
+                if (_roots.Any(x => File.Exists(Path.Combine(x, _baseFolder, path))))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
             public bool HasFile(string path)
             {
                 path = StripFirstFolder(path);
-                foreach (string extension in _extensions)
+                if (!HasExtension(path))
                 {
-                    if (_extras.Any(x => File.Exists(Path.Combine(x, path + extension)))
-                       || _roots.Any(x => File.Exists(Path.Combine(x, _baseFolder, path + extension))))
+                    foreach (string ext in _extensions)
+                    {
+                        if (HasFileExtension(path + ext))
+                        {
+                            return true;
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    if (HasFileExtension(path))
                     {
                         return true;
                     }
@@ -290,34 +269,44 @@ namespace Sledge.Providers.Texture
                 return false;
             }
 
+            public Stream OpenFileExtension(string path)
+            {
+                foreach (var root in _roots)
+                {
+                    var p = Path.Combine(root, _baseFolder, path);
+                    if (File.Exists(p))
+                    {
+                        return File.Open(p, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    }
+
+                }
+                return null;
+            }
+
             public Stream OpenFile(string path)
             {
                 path = StripFirstFolder(path);
 
-                foreach (var extra in _extras)
+                if (!HasExtension(path))
                 {
-                    foreach (string extension in _extensions)
+                    foreach (string ext in _extensions)
                     {
-                        var p = Path.Combine(extra, path + extension);
-                        if (File.Exists(p))
+                        Stream result = OpenFileExtension(path + ext);
+                        if (result != null)
                         {
-                            return File.Open(p, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                            return result;
                         }
                     }
-                    
                 }
-                foreach (var root in _roots)
+                else
                 {
-                    foreach (string extension in _extensions)
+                    Stream result = OpenFileExtension(path);
+                    if (result != null)
                     {
-                        var p = Path.Combine(root, _baseFolder, path + extension);
-                        if (File.Exists(p))
-                        {
-                            return File.Open(p, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                        }
+                        return result;
                     }
-                    
                 }
+
                 return null;
             }
 

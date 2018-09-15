@@ -21,6 +21,11 @@ namespace Sledge.DataStructures.Models
 
         private Box _boundingBox;
 
+        public override string ToString()
+        {
+            return String.Format("Model {0}, {1} body parts, {2} animations, {3} bones, {4} textures", Name, BodyParts.Count, Animations.Count, Bones.Count, Textures.Count);
+        }
+
         public Model()
         {
             Bones = new List<Bone>();
@@ -86,7 +91,7 @@ namespace Sledge.DataStructures.Models
         /// </summary>
         public void PreprocessModel()
         {
-            if (_preprocessed) return;
+            if (_preprocessed || true) return;
             _preprocessed = true;
 
             PreCalculateChromeCoordinates();

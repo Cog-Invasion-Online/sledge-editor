@@ -42,16 +42,18 @@ namespace Sledge.Settings
             AdditionalSettings = new Dictionary<string, GenericStructure>();
             FavouriteTextureFolders = new List<FavouriteTextureFolder>();
 
-            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var sledge = Path.Combine(appdata, "Sledge");
+            //var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var exec = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var sledge = Path.Combine(exec, "Sledge");
             if (!Directory.Exists(sledge)) Directory.CreateDirectory(sledge);
             SettingsFile = Path.Combine(sledge, "Settings.vdf");
         }
 
         public static string GetTextureCachePath()
         {
-            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var sledge = Path.Combine(appdata, "Sledge");
+            //var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var exec = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var sledge = Path.Combine(exec, "Sledge");
             if (!Directory.Exists(sledge)) Directory.CreateDirectory(sledge);
             var cache = Path.Combine(sledge, "TextureCache");
             if (!Directory.Exists(cache)) Directory.CreateDirectory(cache);
@@ -263,8 +265,9 @@ namespace Sledge.Settings
 
         private static string GetSessionFile()
         {
-            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var sledge = Path.Combine(appdata, "Sledge");
+            //var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var exec = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var sledge = Path.Combine(exec, "Sledge");
             if (!Directory.Exists(sledge)) Directory.CreateDirectory(sledge);
             return Path.Combine(sledge, "session");
         }

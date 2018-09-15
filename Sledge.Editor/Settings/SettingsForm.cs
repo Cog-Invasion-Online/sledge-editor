@@ -977,6 +977,12 @@ namespace Sledge.Editor.Settings
             return (Engine)Enum.Parse(typeof(Engine), engineName);
         }
 
+        private Engine GetSelectedBuildEngine()
+        {
+            string engineName = BuildTree.SelectedNode.Text;
+            return (Engine)Enum.Parse(typeof(Engine), engineName);
+        }
+
         private void RemoveGameClicked(object sender, EventArgs e)
         {
             if (_selectedGame != null)
@@ -1027,7 +1033,7 @@ namespace Sledge.Editor.Settings
             _builds.Add(new Build
                             {
                                 ID = 0,
-                                Engine = GetSelectedEngine(),
+                                Engine = GetSelectedBuildEngine(),
                                 Name = "New Build"
                             });
             ReIndex();

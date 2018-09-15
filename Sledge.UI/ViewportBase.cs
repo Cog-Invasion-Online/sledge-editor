@@ -48,6 +48,8 @@ namespace Sledge.UI
         public event RenderExceptionEventHandler RenderException;
         protected void OnRenderException(Exception ex)
         {
+            Console.WriteLine(ex.ToString());
+            /*
             if (RenderException != null)
             {
                 var st = new StackTrace();
@@ -60,13 +62,15 @@ namespace Sledge.UI
                 }
                 RenderException(this, new Exception(msg, ex));
             }
+            */
         }
 
         public delegate void ListenerExceptionEventHandler(object sender, Exception exception);
         public event ListenerExceptionEventHandler ListenerException;
         protected void OnListenerException(Exception ex)
         {
-            if (ListenerException != null)
+            Console.WriteLine(ex.ToString());
+            /*if (ListenerException != null)
             {
                 var st = new StackTrace();
                 var frames = st.GetFrames() ?? new StackFrame[0];
@@ -77,7 +81,7 @@ namespace Sledge.UI
                     msg += "\r\n    " + method.ReflectedType.FullName + "." + method.Name;
                 }
                 ListenerException(this, new Exception(msg, ex));
-            }
+            }*/
         }
 
         protected ViewportBase() : base(new GraphicsMode(GraphicsMode.Default.ColorFormat, 24))

@@ -107,20 +107,8 @@ namespace Sledge.Editor.Documents
                 GameData.MapSizeLow = game.OverrideMapSizeLow;
                 GameData.MapSizeHigh = game.OverrideMapSizeHigh;
             }
-
-            Console.WriteLine("Steam Install? {0}", Game.SteamInstall);
-
-            Console.WriteLine("Game Directories:");
-            foreach (string gDir in Environment.GetGameDirectories())
-            {
-                Console.WriteLine("\t" + gDir);
-            }
-            Console.WriteLine("Additional Packages:");
-            foreach (string pak in Game.AdditionalPackages)
-            {
-                Console.WriteLine("\t" + pak);
-            }
-            TextureCollection = TextureProvider.CreateCollection(Environment.GetGameDirectories(), Game.AdditionalPackages, Game.GetTextureBlacklist(), Game.GetTextureWhitelist());
+            
+            TextureCollection = TextureProvider.CreateCollection(game.ID, Environment.GetGameDirectories(), Game.AdditionalPackages, Game.GetTextureBlacklist(), Game.GetTextureWhitelist());
             /* .Union(GameData.MaterialExclusions) */ // todo material exclusions
 
             var texList = Map.GetAllTextures();

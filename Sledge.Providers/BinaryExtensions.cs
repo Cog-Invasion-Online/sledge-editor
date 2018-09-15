@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Sledge.DataStructures.Geometric;
+using System;
 
 namespace Sledge.Providers
 {
@@ -45,6 +46,20 @@ namespace Sledge.Providers
             return arr;
         }
 
+        public static UInt16[] ReadUShortArray(this BinaryReader br, int num)
+        {
+            var arr = new UInt16[num];
+            for (var i = 0; i < num; i++) arr[i] = br.ReadUInt16();
+            return arr;
+        }
+
+        public static UInt32[] ReadUIntArray(this BinaryReader br, int num)
+        {
+            var arr = new UInt32[num];
+            for (var i = 0; i < num; i++) arr[i] = br.ReadUInt32();
+            return arr;
+        }
+
         public static short[] ReadShortArray(this BinaryReader br, int num)
         {
             var arr = new short[num];
@@ -73,6 +88,13 @@ namespace Sledge.Providers
             return arr;
         }
 
+        public static double[] ReadDoubleArray(this BinaryReader br, int num)
+        {
+            var arr = new double[num];
+            for (var i = 0; i < num; i++) arr[i] = br.ReadDouble();
+            return arr;
+        }
+
         public static Coordinate[] ReadCoordinateArray(this BinaryReader br, int num)
         {
             var arr = new Coordinate[num];
@@ -85,6 +107,14 @@ namespace Sledge.Providers
             var arr = new CoordinateF[num];
             for (var i = 0; i < num; i++) arr[i] = br.ReadCoordinateF();
             return arr;
+        }
+
+        public static string ReadPandaString(this BinaryReader br)
+        {
+            int length = br.ReadUInt16();
+            char[] bytes = br.ReadChars(length);
+            string data = new string(bytes);
+            return data;
         }
 
         public static string ReadCString(this BinaryReader br)

@@ -106,6 +106,11 @@ namespace Sledge.Providers.Map
                 face.Texture.Rotation = decimal.Parse(parts[28], ns, CultureInfo.InvariantCulture);
                 face.Texture.XScale = decimal.Parse(parts[29], ns, CultureInfo.InvariantCulture);
                 face.Texture.YScale = decimal.Parse(parts[30], ns, CultureInfo.InvariantCulture);
+                if (parts.Count >= 32)
+                {
+                    // We have lightmap scale
+                    face.Texture.LightmapScale = decimal.Parse(parts[31], ns, CultureInfo.InvariantCulture);
+                }
             }
 
             return face;
@@ -113,7 +118,8 @@ namespace Sledge.Providers.Map
 
         private void WriteFace(StreamWriter sw, Face face)
         {
-            // ( -128 64 64 ) ( -64 64 64 ) ( -64 0 64 ) AAATRIGGER [ 1 0 0 0 ] [ 0 -1 0 0 ] 0 1 1
+            // ( -128 64 64 ) ( -64 64 64 ) ( -64 0 64 ) AAATRIGGER [ 1 0 0 0 ] [ 0 -1 0 0 ] 0 1 1 16
+            // last number (the 16) is newly added lightmap scale
             var strings = face.Vertices.Take(3).Select(x => "( " + FormatCoordinate(x.Location) + " )").ToList();
             strings.Add(String.IsNullOrWhiteSpace(face.Texture.Name) ? "AAATRIGGER" : face.Texture.Name);
             strings.Add("[");
@@ -127,6 +133,7 @@ namespace Sledge.Providers.Map
             strings.Add(face.Texture.Rotation.ToString("0.000", CultureInfo.InvariantCulture));
             strings.Add(face.Texture.XScale.ToString("0.000", CultureInfo.InvariantCulture));
             strings.Add(face.Texture.YScale.ToString("0.000", CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.LightmapScale.ToString("0.000", CultureInfo.InvariantCulture));
             sw.WriteLine(String.Join(" ", strings));
         }
 
@@ -137,7 +144,7 @@ namespace Sledge.Providers.Map
             while ((line = CleanLine(rdr.ReadLine())) != null)
             {
                 if (String.IsNullOrWhiteSpace(line)) continue;
-                if (line == "}")
+                if (line == "</solid>")
                 {
                     var ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
                     ret.Colour = Colour.GetRandomBrushColour();
@@ -164,9 +171,9 @@ namespace Sledge.Providers.Map
 
         private void WriteSolid(StreamWriter sw, Solid solid)
         {
-            sw.WriteLine("{");
+            sw.WriteLine("<solid>");
             solid.Faces.ForEach(x => WriteFace(sw, x));
-            sw.WriteLine("}");
+            sw.WriteLine("</solid>");
         }
 
         private static readonly string[] ExcludedKeys = new[] { "spawnflags", "classname", "origin", "wad", "mapversion" };
@@ -202,6 +209,37 @@ namespace Sledge.Providers.Map
             sw.WriteLine('"' + key + "\" \"" + value + '"');
         }
 
+        private void ReadConnections(StreamReader rdr, ref Entity ent)
+        {
+            string line;
+            while ((line = CleanLine(rdr.ReadLine())) != null)
+            {
+                if (line == "</connections>")
+                {
+                    break;
+                }
+
+                if (String.IsNullOrWhiteSpace(line)) continue;
+
+                var split = line.Split(' ');
+                var key = split[0].Trim('"');
+
+                var val = String.Join(" ", split.Skip(1)).Trim('"');
+
+                string[] data = val.Split(',');
+                Output op = new Output()
+                {
+                    Name = key,
+                    Target = data[0],
+                    Input = data[1],
+                    Parameter = data[2],
+                    Delay = Convert.ToDecimal(data[3]),
+                    OnceOnly = Convert.ToBoolean(Convert.ToInt32(data[4]))
+                };
+                ent.EntityData.Outputs.Add(op);
+            }
+        }
+
         private Entity ReadEntity(StreamReader rdr, IDGenerator generator)
         {
             var ent = new Entity(generator.GetNextObjectID()) { EntityData = new EntityData(), Colour = Colour.GetRandomBrushColour() };
@@ -210,12 +248,16 @@ namespace Sledge.Providers.Map
             {
                 if (String.IsNullOrWhiteSpace(line)) continue;
                 if (line[0] == '"') ReadProperty(ent, line);
-                else if (line[0] == '{')
+                else if (line == "<solid>")
                 {
                     var s = ReadSolid(rdr, generator);
                     if (s != null) s.SetParent(ent, false);
                 }
-                else if (line[0] == '}') break;
+                else if (line == "<connections>")
+                {
+                        ReadConnections(rdr, ref ent);
+                }
+                else if (line == "</entity>") break;
             }
             ent.UpdateBoundingBox(false);
             return ent;
@@ -226,7 +268,7 @@ namespace Sledge.Providers.Map
             var solids = new List<Solid>();
             CollectSolids(solids, ent);
 
-            sw.WriteLine("{");
+            sw.WriteLine("<entity>");
             WriteProperty(sw, "classname", ent.EntityData.Name);
 
             if (ent.EntityData.Flags > 0)
@@ -254,7 +296,19 @@ namespace Sledge.Providers.Map
             if (solids.Any()) solids.ForEach(x => WriteSolid(sw, x)); // Brush entity
             else WriteProperty(sw, "origin", FormatCoordinate(ent.Origin)); // Point entity
 
-            sw.WriteLine("}");
+            if (ent.EntityData.Outputs.Any())
+            {
+                sw.WriteLine("<connections>");
+
+                foreach (Output op in ent.EntityData.Outputs)
+                {
+                    WriteProperty(sw, op.Name, op.Target + "," + op.Input + "," + op.Parameter + "," + op.Delay.ToString("F2") + "," + (op.OnceOnly ? "1" : "0"));
+                }
+
+                sw.WriteLine("</connections>");
+            }
+
+            sw.WriteLine("</entity>");
         }
 
         private void WriteWorld(StreamWriter sw, World world)
@@ -264,7 +318,7 @@ namespace Sledge.Providers.Map
             CollectSolids(solids, world);
             CollectEntities(entities, world);
 
-            sw.WriteLine("{");
+            sw.WriteLine("<entity>");
 
             WriteProperty(sw, "classname", world.EntityData.Name);
             WriteProperty(sw, "spawnflags", world.EntityData.Flags.ToString(CultureInfo.InvariantCulture));
@@ -276,7 +330,7 @@ namespace Sledge.Providers.Map
             }
             solids.ForEach(x => WriteSolid(sw, x));
 
-            sw.WriteLine("}");
+            sw.WriteLine("</entity>");
 
             entities.ForEach(x => WriteEntity(sw, x));
         }
@@ -288,7 +342,7 @@ namespace Sledge.Providers.Map
             while ((line = CleanLine(rdr.ReadLine())) != null)
             {
                 if (String.IsNullOrWhiteSpace(line)) continue;
-                if (line == "{") list.Add(ReadEntity(rdr, generator));
+                if (line == "<entity>") list.Add(ReadEntity(rdr, generator));
             }
             return list;
         }

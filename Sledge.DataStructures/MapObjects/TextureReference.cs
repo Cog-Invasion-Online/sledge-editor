@@ -42,6 +42,8 @@ namespace Sledge.DataStructures.MapObjects
         public decimal YShift { get; set; }
         public decimal YScale { get; set; }
 
+        public decimal LightmapScale { get; set; }
+
         public TextureReference()
         {
             Name = "";
@@ -51,6 +53,7 @@ namespace Sledge.DataStructures.MapObjects
             _vAxis = Coordinate.UnitX;
             XShift = YShift = 0;
             XScale = YScale = 1;
+            LightmapScale = 16;
         }
 
         protected TextureReference(SerializationInfo info, StreamingContext context)
@@ -63,6 +66,7 @@ namespace Sledge.DataStructures.MapObjects
             XScale = info.GetDecimal("XScale");
             YShift = info.GetDecimal("YShift");
             YScale = info.GetDecimal("YScale");
+            LightmapScale = info.GetDecimal("LightmapScale");
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -75,6 +79,7 @@ namespace Sledge.DataStructures.MapObjects
             info.AddValue("XScale", XScale);
             info.AddValue("YShift", YShift);
             info.AddValue("YScale", YScale);
+            info.AddValue("LightmapScale", LightmapScale);
         }
 
         public Coordinate GetNormal()
@@ -94,7 +99,8 @@ namespace Sledge.DataStructures.MapObjects
                            XShift = XShift,
                            XScale = XScale,
                            YShift = YShift,
-                           YScale = YScale
+                           YScale = YScale,
+                           LightmapScale = LightmapScale
                        };
         }
     }
