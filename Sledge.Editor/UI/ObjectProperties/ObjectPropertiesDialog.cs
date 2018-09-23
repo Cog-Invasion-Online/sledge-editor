@@ -194,7 +194,7 @@ namespace Sledge.Editor.UI.ObjectProperties
                             Name = item.SubItems[0].Text,
                             Target = item.SubItems[1].Text,
                             Input = item.SubItems[2].Text,
-                            Parameter = "",
+                            Parameter = item.SubItems[3].Text,
                             Delay = Convert.ToDecimal(item.SubItems[4].Text),
                             OnceOnly = item.SubItems[5].Text == "Yes"
                         };
@@ -466,7 +466,7 @@ namespace Sledge.Editor.UI.ObjectProperties
                 .Select(x => x.GetEntityData().GetPropertyValue("targetname"))
                 .Where(x => !String.IsNullOrWhiteSpace(x))
                 .Distinct()
-                .Where(x => x != entname )
+                //.Where(x => x != entname )
                 .OrderBy(x => x.ToLowerInvariant());
 
             return result;
@@ -480,6 +480,7 @@ namespace Sledge.Editor.UI.ObjectProperties
             GameDataObject data = ent.GameData;
 
             OutputInputCombo.Items.Clear();
+            OutputInputCombo.ResetText();
             foreach (IO io in data.InOuts)
             {
                 if (io.IOType == IOType.Input)
@@ -492,14 +493,18 @@ namespace Sledge.Editor.UI.ObjectProperties
         private void ResetIO()
         {
             OutputNameCombo.Items.Clear();
+            OutputNameCombo.ResetText();
             OutputInputCombo.Items.Clear();
-            OutputPOCombo.Items.Clear();
-            OutputPOCombo.Enabled = false;
+            OutputInputCombo.ResetText();
+            OutputParamOvrd.Clear();
             OutputTNCombo.Items.Clear();
+            OutputTNCombo.ResetText();
             OutputDelay.Value = (decimal)0.0;
             OutputOnce.Checked = false;
             OutputsList.Items.Clear();
+            OutputsList.ResetText();
             InputsList.Items.Clear();
+            InputsList.ResetText();
             _outputsChanged = false;
 
             if (Objects.Count > 1 || !(Objects[0] is Entity))
@@ -534,7 +539,7 @@ namespace Sledge.Editor.UI.ObjectProperties
                 op.Name,
                 op.Target,
                 op.Input,
-                "None",
+                op.Parameter,
                 op.Delay.ToString("F2"),
                 op.OnceOnly ? "Yes" : "No"
                 });
@@ -820,7 +825,7 @@ namespace Sledge.Editor.UI.ObjectProperties
             ListViewItem item = new ListViewItem(new string[] { OutputNameCombo.GetItemText(OutputNameCombo.SelectedItem),
             OutputTNCombo.GetItemText(OutputTNCombo.SelectedItem),
             OutputInputCombo.GetItemText(OutputInputCombo.SelectedItem),
-            "None",
+            OutputParamOvrd.Text,
             OutputDelay.Value.ToString("F2"),
             OutputOnce.Checked ? "Yes" : "No"
             });

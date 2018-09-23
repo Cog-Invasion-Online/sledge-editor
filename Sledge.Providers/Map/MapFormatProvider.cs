@@ -279,17 +279,6 @@ namespace Sledge.Providers.Map
             foreach (var prop in ent.EntityData.Properties)
             {
                 if (prop.Key == "classname" || prop.Key == "spawnflags" || prop.Key == "origin") continue;
-
-                // VHE doesn't write empty or zero values to the .map file
-                var gameDataProp = ent.GameData != null ? ent.GameData.Properties.FirstOrDefault(x => String.Equals(x.Name, prop.Key, StringComparison.InvariantCultureIgnoreCase)) : null;
-                if (gameDataProp != null)
-                {
-                    var emptyGd = String.IsNullOrWhiteSpace(gameDataProp.DefaultValue) || gameDataProp.DefaultValue == "0";
-                    var emptyProp = String.IsNullOrWhiteSpace(prop.Value) || prop.Value == "0";
-
-                    // The value hasn't changed from the default, don't write if it's an empty value
-                    if (emptyGd && emptyProp) continue;
-                }
                 WriteProperty(sw, prop.Key, prop.Value);
             }
 
