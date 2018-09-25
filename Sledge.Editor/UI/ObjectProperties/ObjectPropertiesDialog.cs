@@ -545,6 +545,36 @@ namespace Sledge.Editor.UI.ObjectProperties
                 });
                 OutputsList.Items.Add(item);
             }
+
+            string myName = ent.EntityData.GetPropertyValue("targetname");
+
+            // Now find any inputs tied to me!
+            if (!String.IsNullOrWhiteSpace(myName))
+            {
+                // We have a name, so it's possible there are some outputs linked to me.
+                IEnumerable<EntityData> obj = Document.Map.WorldSpawn.Find(x => x.GetEntityData() != null)
+                    .Select(x => x.GetEntityData());
+                foreach (EntityData edata in obj)
+                {
+                    foreach (Output op in edata.Outputs)
+                    {
+                        if (op.Target == myName)
+                        {
+                            string ptname = edata.GetPropertyValue("targetname");
+                            string tname = String.IsNullOrWhiteSpace(ptname) ? "<unnamed>" : ptname;
+                            ListViewItem item = new ListViewItem(new string[] {
+                                tname,
+                                op.Name,
+                                op.Input,
+                                op.Parameter,
+                                op.Delay.ToString("F2"),
+                                op.OnceOnly ? "Yes" : "No"
+                                });
+                            InputsList.Items.Add(item);
+                        }
+                    }
+                }
+            }
             
         }
 
