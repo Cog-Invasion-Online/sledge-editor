@@ -43,9 +43,9 @@ namespace Sledge.Providers.Map
 
         private string FormatCoordinate(Coordinate c)
         {
-            return c.X.ToString("0.000", CultureInfo.InvariantCulture)
-                   + " " + c.Y.ToString("0.000", CultureInfo.InvariantCulture)
-                   + " " + c.Z.ToString("0.000", CultureInfo.InvariantCulture);
+            return c.X.ToString(CultureInfo.InvariantCulture)
+                   + " " + c.Y.ToString(CultureInfo.InvariantCulture)
+                   + " " + c.Z.ToString(CultureInfo.InvariantCulture);
         }
 
         private void CollectSolids(List<Solid> solids, MapObject parent)
@@ -110,6 +110,16 @@ namespace Sledge.Providers.Map
                 {
                     // We have lightmap scale
                     face.Texture.LightmapScale = decimal.Parse(parts[31], ns, CultureInfo.InvariantCulture);
+                    if (parts.Count >= 33)
+                    {
+                        int numVerts = int.Parse(parts[32], NumberStyles.Integer, CultureInfo.InvariantCulture);
+                        for (int vertnum = 0; vertnum < numVerts; vertnum++)
+                        {
+                            int part = 34 + (vertnum * 5);
+                            Coordinate coord = Coordinate.Parse(parts[part], parts[part + 1], parts[part + 2]);
+                            face.Vertices.Add(new Vertex(coord, face));
+                        }
+                    }
                 }
             }
 
@@ -124,30 +134,50 @@ namespace Sledge.Providers.Map
             strings.Add(String.IsNullOrWhiteSpace(face.Texture.Name) ? "AAATRIGGER" : face.Texture.Name);
             strings.Add("[");
             strings.Add(FormatCoordinate(face.Texture.UAxis));
-            strings.Add(face.Texture.XShift.ToString("0.000", CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.XShift.ToString(CultureInfo.InvariantCulture));
             strings.Add("]");
             strings.Add("[");
             strings.Add(FormatCoordinate(face.Texture.VAxis));
-            strings.Add(face.Texture.YShift.ToString("0.000", CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.YShift.ToString(CultureInfo.InvariantCulture));
             strings.Add("]");
-            strings.Add(face.Texture.Rotation.ToString("0.000", CultureInfo.InvariantCulture));
-            strings.Add(face.Texture.XScale.ToString("0.000", CultureInfo.InvariantCulture));
-            strings.Add(face.Texture.YScale.ToString("0.000", CultureInfo.InvariantCulture));
-            strings.Add(face.Texture.LightmapScale.ToString("0.000", CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.Rotation.ToString(CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.XScale.ToString(CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.YScale.ToString(CultureInfo.InvariantCulture));
+            strings.Add(face.Texture.LightmapScale.ToString(CultureInfo.InvariantCulture));
+            strings.Add(face.Vertices.Count.ToString(CultureInfo.InvariantCulture));
+            for (int i = 0; i < face.Vertices.Count; i++)
+            {
+                strings.Add("{");
+                strings.Add(FormatCoordinate(face.Vertices[i].Location));
+                strings.Add("}");
+            }
             sw.WriteLine(String.Join(" ", strings));
         }
 
         private Solid ReadSolid(StreamReader rdr, IDGenerator generator)
         {
             var faces = new List<Face>();
+            Solid ret;
             string line;
             while ((line = CleanLine(rdr.ReadLine())) != null)
             {
                 if (String.IsNullOrWhiteSpace(line)) continue;
                 if (line == "</solid>")
                 {
-                    var ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
+                    if (faces.All(x => x.Vertices.Count >= 3))
+                    {
+                        // Vertices were stored in the map file
+                        Console.WriteLine("Vertices were stored in map file");
+                        ret = new Solid(generator.GetNextObjectID());
+                        ret.Faces.AddRange(faces);
+                    }
+                    else
+                    {
+                        ret = Solid.CreateFromIntersectingPlanes(faces.Select(x => x.Plane), generator);
+                    }
+
                     ret.Colour = Colour.GetRandomBrushColour();
+
                     foreach (var face in ret.Faces)
                     {
                         var f = faces.FirstOrDefault(x => x.Plane.Normal.EquivalentTo(face.Plane.Normal));
@@ -160,7 +190,9 @@ namespace Sledge.Providers.Map
                         face.Texture = f.Texture;
                         face.Parent = ret;
                         face.Colour = ret.Colour;
+                        face.UpdateBoundingBox();
                     }
+                    
                     ret.UpdateBoundingBox(false);
                     return ret;
                 }
