@@ -37,11 +37,20 @@ namespace Sledge.Providers.Texture
                 {
                     continue;
                 }
-                Bitmap bmp = GetBitmap(str);
-                if (bmp == null)
+                Bitmap bmp;
+                try
+                {
+                    bmp = GetBitmap(str);
+                    if (bmp == null)
+                    {
+                        continue;
+                    }
+                }
+                catch (Exception e)
                 {
                     continue;
                 }
+                
                 var idx = tex.LastIndexOf('/');
                 var dir = idx >= 0 ? tex.Substring(0, idx) : "";
 
