@@ -134,6 +134,7 @@ namespace Sledge.Editor.Compiling
             {
                 batch += '"' + step.Operation + '"' + ' ' + step.Flags + "\n";
             }
+            batch += "pause\n";
             File.WriteAllText(batchFile, batch);
 
             var process = new Process
