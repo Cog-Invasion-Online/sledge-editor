@@ -8,6 +8,7 @@ using System.CodeDom.Compiler;
 using System.CodeDom;
 using Sledge.FileSystem;
 using Sledge.DataStructures.Geometric;
+using OpenTK.Graphics;
 
 namespace Sledge.Providers.Model
 {
@@ -663,6 +664,11 @@ namespace Sledge.Providers.Model
         public MatrixF _mat;
         public Flags _flags;
 
+        public override string ToString()
+        {
+            return String.Format("Pos: {0}, Hpr: {1}, Scale: {2}", _pos.ToString(), _hpr.ToString(), _scale.ToString());
+        }
+
         public enum Flags
         {
             F_is_identity = 0x00000001,
@@ -710,6 +716,7 @@ namespace Sledge.Providers.Model
             TransformState ts = new TransformState();
             ts._pos = pos;
             ts._quat = quat;
+            ts._hpr = quat.GetEulerAngles();
             ts._scale = scale;
             ts._flags = Flags.F_components_given | Flags.F_quat_given | Flags.F_components_known | Flags.F_quat_known | Flags.F_has_components;
 
@@ -731,6 +738,7 @@ namespace Sledge.Providers.Model
                     vector.Y = temp;
                     float scalar = br.ReadSingle();
                     _quat = new QuaternionF(vector, scalar);
+                    _hpr = _quat.GetEulerAngles();
                 }
                 else
                 {
@@ -745,6 +753,9 @@ namespace Sledge.Providers.Model
             {
                 float[] init = br.ReadSingleArray(16);
                 _mat = new MatrixF(init);
+                _pos = _mat.Shift;
+                //_hpr = _mat.Y;
+                _scale = new CoordinateF(_mat[0], _mat[5], _mat[10]);
             }
         }
     }
@@ -1277,6 +1288,7 @@ namespace Sledge.Providers.Model
                     GeomVertexData data = geom._data;
                     GeomVertexReader reader = new GeomVertexReader(data);
                     TraverseData gdata = tdata.Compose(new TransformState(), gn._geom_states[i]);
+
                     
                     DataStructures.Models.Mesh mesh = new DataStructures.Models.Mesh(0);
                     mesh.SkinRef = 0;
@@ -1286,7 +1298,6 @@ namespace Sledge.Providers.Model
                         int texId = HasTexture(tattr._texture);
                         if (texId == -1)
                         {
-                            _textures.Add(tattr._texture);
                             try
                             {
                                 texId = mdl.Textures.Count;
@@ -1307,6 +1318,7 @@ namespace Sledge.Providers.Model
                                     Flags = 0
                                 };
                                 mdl.Textures.Add(tex);
+                                _textures.Add(tattr._texture);
                                 Console.WriteLine("Added new texture {0}, {1}", tex.Name, tattr._texture._filename);
                             }
                             catch (Exception e)
@@ -1336,7 +1348,7 @@ namespace Sledge.Providers.Model
                                 {
                                     int idx = v - start;
                                     int[] add;
-                                    if (idx % 2 != 0)
+                                    if (idx % 2 == 0)//!= 0)
                                     {
                                         add = new int[] { v + 1, v, v + 2 };
                                     }
@@ -1352,10 +1364,10 @@ namespace Sledge.Providers.Model
                                         reader.set_row(row);
                                         CoordinateF pos = reader.get_data_3f();
 
-                                        pos = pos + tdata.transform._quat.Rotate(tdata.transform._pos);
-                                        pos = pos.ComponentMultiply(tdata.transform._scale);
+                                        pos = pos + gdata.transform._quat.Rotate(gdata.transform._pos);
+                                        pos = pos.ComponentMultiply(gdata.transform._scale);
                                         pos = pos.ComponentMultiply(new CoordinateF(16, 16, 16));
-                                        float temp = pos.X;
+                                        float temp = -pos.X;
                                         pos.X = pos.Y;
                                         pos.Y = temp;
 
@@ -1375,23 +1387,35 @@ namespace Sledge.Providers.Model
                                             normal = reader.get_data_3f();
                                         }
 
-                                        mesh.Vertices.Add(new DataStructures.Models.MeshVertex(pos, normal, mdl.Bones[0], texcoord._x, 1 - texcoord._y));
+                                        //Color4 color = Color4.White;
+                                        //if (data._format.has_column("color"))
+                                        //{
+                                        //    reader.set_column("color");
+                                        //    reader.set_row(row);
+                                        //    CoordinateF co_color = reader.get_data_3f();
+                                        //    color = new Color4(co_color.X * 255, co_color.Y * 255, co_color.Z * 255, 255);
+                                        //}
+
+                                        var mvert = new DataStructures.Models.MeshVertex(pos, normal, mdl.Bones[0], texcoord._x, 1 - texcoord._y);
+                                        //mvert.Color = color;
+                                        //Console.WriteLine("Color of mesh vertex: {0}", color.ToString());
+                                        mesh.Vertices.Add(mvert);
                                     }
                                 }
                             }
                             else
                             {
-                                for (int vert = start; vert < end; vert++)
+                                for (int vert = end - 1; vert >= start; vert--)
                                 {
                                     int row = gprim.GetVert(vert);
                                     reader.set_column("vertex");
                                     reader.set_row(row);
                                     CoordinateF pos = reader.get_data_3f();
 
-                                    pos = pos + tdata.transform._quat.Rotate(tdata.transform._pos);
-                                    pos = pos.ComponentMultiply(tdata.transform._scale);
+                                    pos = pos + gdata.transform._quat.Rotate(gdata.transform._pos);
+                                    pos = pos.ComponentMultiply(gdata.transform._scale);
                                     pos = pos.ComponentMultiply(new CoordinateF(16, 16, 16));
-                                    float temp = pos.X;
+                                    float temp = -pos.X;
                                     pos.X = pos.Y;
                                     pos.Y = temp;
 
@@ -1411,7 +1435,20 @@ namespace Sledge.Providers.Model
                                         normal = reader.get_data_3f();
                                     }
 
-                                    mesh.Vertices.Add(new DataStructures.Models.MeshVertex(pos, normal, mdl.Bones[0], texcoord._x, 1 - texcoord._y));
+                                    //Color4 color = Color4.White;
+                                    //if (data._format.has_column("color"))
+                                    //{
+                                    //    reader.set_column("color");
+                                    //    reader.set_row(row);
+                                    //    CoordinateF co_color = reader.get_data_3f();
+                                    //    color = new Color4(co_color.X * 255, co_color.Y * 255, co_color.Z * 255, 255);
+                                    //}
+
+                                    var mvert = new DataStructures.Models.MeshVertex(pos, normal, mdl.Bones[0], texcoord._x, 1 - texcoord._y);
+                                    //mvert.Color = color;
+                                    //Console.WriteLine("Color of mesh vertex: {0}", color.ToString());
+
+                                    mesh.Vertices.Add(mvert);
                                 }
                             }
                         }
@@ -1424,7 +1461,8 @@ namespace Sledge.Providers.Model
             for (int i = 0; i < root._children.Count; i++)
             {
                 PandaNode child = root._children[i];
-                r_traverse_below(ref mdl, ref child, tdata.Compose(child._transform, child._state));
+                TraverseData ctdata = tdata.Compose(child._transform, child._state);
+                r_traverse_below(ref mdl, ref child, ctdata);
             }
         }
 

@@ -62,7 +62,7 @@ namespace Sledge.Editor.Rendering.Arrays
                                 {
                                     Position = new Vector3(c.X, c.Y, c.Z),
                                     Normal = new Vector3(n.X, n.Y, n.Z),
-                                    Colour = Color4.White,
+                                    Colour = vertex.Color,
                                     Texture = new Vector2(vertex.TextureU, vertex.TextureV),
                                     IsSelected = 0
                                 }
