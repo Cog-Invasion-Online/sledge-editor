@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -32,32 +33,25 @@ namespace Sledge.Providers.Texture
 
             foreach (string tex in texRoot.GetFiles())
             {
-                Stream str = texRoot.OpenFile(tex);
-                if (str == null)
+                int width = 1;
+                int height = 1;
+
+                using (Stream file = texRoot.OpenFile(tex))
                 {
-                    continue;
-                }
-                Bitmap bmp;
-                try
-                {
-                    bmp = GetBitmap(str);
-                    if (bmp == null)
+                    using (Image img = Image.FromStream(stream: file, useEmbeddedColorManagement: false, validateImageData: false))
                     {
-                        continue;
+                        width = (int)img.PhysicalDimension.Width;
+                        height = (int)img.PhysicalDimension.Height;
                     }
                 }
-                catch (Exception e)
-                {
-                    continue;
-                }
-                
+
                 var idx = tex.LastIndexOf('/');
                 var dir = idx >= 0 ? tex.Substring(0, idx) : "";
 
                 if (!packages.ContainsKey(dir))
                     packages.Add(dir, new TexturePackage(packageRoot, dir, this));
 
-                packages[dir].AddTexture(new TextureItem(packages[dir], tex, TextureFlags.None, tex, bmp.Width, bmp.Height));
+                packages[dir].AddTexture(new TextureItem(packages[dir], tex, TextureFlags.None, tex, width, height));
             }
 
             foreach (var tp in packages.Values)

@@ -517,9 +517,7 @@
     <Compile Include="UI\Sidebar\HelpSidebarPanel.Designer.cs">
       <DependentUpon>HelpSidebarPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\TableSplitControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="UI\TableSplitControl.cs" />
     <Compile Include="UI\Sidebar\BrushSidebarPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

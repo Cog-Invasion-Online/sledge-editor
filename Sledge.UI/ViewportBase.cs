@@ -188,7 +188,7 @@ namespace Sledge.UI
 
         protected void UpdateFrame()
         {
-            if (!IsFocused) // Change this if things start to get choppy
+            if (false)//!IsFocused) // Change this if things start to get choppy
             {
                 UnfocusedUpdateCounter++;
                 // Update every 10th frame

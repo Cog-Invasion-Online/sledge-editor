@@ -133,7 +133,7 @@ namespace Sledge.Editor
                             DisplayStyle = ToolStripItemDisplayStyle.Image,
                             ImageScaling = ToolStripItemImageScaling.None,
                             AutoSize = false,
-                            Width = 36,
+                            Width = 44,
                             Height = 36
                         }
                     );
