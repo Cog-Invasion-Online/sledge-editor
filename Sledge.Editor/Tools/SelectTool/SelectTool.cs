@@ -869,6 +869,8 @@ namespace Sledge.Editor.Tools.SelectTool
 
         private void RenderTransformBox(Viewport2D viewport)
         {
+            return;
+
             if (!CurrentTransform.HasValue) return;
 
             var box = new Box(State.PreTransformBoxStart, State.PreTransformBoxEnd);
@@ -878,7 +880,7 @@ namespace Sledge.Editor.Tools.SelectTool
             var e = viewport.Flatten(box.End);
 
             GL.Enable(EnableCap.LineStipple);
-            GL.LineStipple(10, 0xAAAA);
+            GL.LineStipple(16, 0xAAAA);
             GL.Begin(PrimitiveType.Lines);
             GL.Color4(Color.FromArgb(64, BoxColour));
 

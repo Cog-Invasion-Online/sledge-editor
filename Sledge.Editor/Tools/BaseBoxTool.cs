@@ -617,7 +617,7 @@ namespace Sledge.Editor.Tools
 
             if (Sledge.Settings.View.DrawBoxDashedLines)
             {
-                GL.LineStipple(4, 0xAAAA);
+                GL.LineStipple(10, 0xAAAA);
                 GL.Enable(EnableCap.LineStipple);
             }
 

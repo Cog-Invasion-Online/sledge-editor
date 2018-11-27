@@ -43,7 +43,7 @@
             // BrowseButton
             // 
             this.BrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BrowseButton.Location = new System.Drawing.Point(131, 101);
+            this.BrowseButton.Location = new System.Drawing.Point(102, 143);
             this.BrowseButton.Name = "BrowseButton";
             this.BrowseButton.Size = new System.Drawing.Size(66, 22);
             this.BrowseButton.TabIndex = 11;
@@ -54,7 +54,7 @@
             // ReplaceButton
             // 
             this.ReplaceButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ReplaceButton.Location = new System.Drawing.Point(131, 129);
+            this.ReplaceButton.Location = new System.Drawing.Point(102, 171);
             this.ReplaceButton.Name = "ReplaceButton";
             this.ReplaceButton.Size = new System.Drawing.Size(66, 22);
             this.ReplaceButton.TabIndex = 12;
@@ -68,34 +68,34 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GroupComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.GroupComboBox.FormattingEnabled = true;
-            this.GroupComboBox.Location = new System.Drawing.Point(60, 3);
+            this.GroupComboBox.Location = new System.Drawing.Point(11, 26);
             this.GroupComboBox.Name = "GroupComboBox";
-            this.GroupComboBox.Size = new System.Drawing.Size(137, 21);
+            this.GroupComboBox.Size = new System.Drawing.Size(157, 21);
             this.GroupComboBox.TabIndex = 8;
             this.GroupComboBox.SelectedIndexChanged += new System.EventHandler(this.GroupChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 33);
+            this.label5.Location = new System.Drawing.Point(3, 50);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(46, 13);
+            this.label5.Size = new System.Drawing.Size(79, 13);
             this.label5.TabIndex = 6;
-            this.label5.Text = "Texture:";
+            this.label5.Text = "Current texture:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 6);
+            this.label4.Location = new System.Drawing.Point(3, 10);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(39, 13);
+            this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Group:";
+            this.label4.Text = "Texture group:";
             // 
             // ApplyButton
             // 
             this.ApplyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ApplyButton.Location = new System.Drawing.Point(131, 73);
+            this.ApplyButton.Location = new System.Drawing.Point(102, 115);
             this.ApplyButton.Name = "ApplyButton";
             this.ApplyButton.Size = new System.Drawing.Size(66, 22);
             this.ApplyButton.TabIndex = 11;
@@ -108,10 +108,10 @@
             this.SelectionPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SelectionPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.SelectionPictureBox.Location = new System.Drawing.Point(3, 57);
+            this.SelectionPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.SelectionPictureBox.Location = new System.Drawing.Point(11, 93);
             this.SelectionPictureBox.Name = "SelectionPictureBox";
-            this.SelectionPictureBox.Size = new System.Drawing.Size(122, 103);
+            this.SelectionPictureBox.Size = new System.Drawing.Size(85, 104);
             this.SelectionPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.SelectionPictureBox.TabIndex = 10;
             this.SelectionPictureBox.TabStop = false;
@@ -120,7 +120,7 @@
             // 
             this.SizeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SizeLabel.AutoSize = true;
-            this.SizeLabel.Location = new System.Drawing.Point(131, 57);
+            this.SizeLabel.Location = new System.Drawing.Point(102, 93);
             this.SizeLabel.Name = "SizeLabel";
             this.SizeLabel.Size = new System.Drawing.Size(27, 13);
             this.SizeLabel.TabIndex = 13;
@@ -136,10 +136,11 @@
             this.TextureComboBox.FormattingEnabled = true;
             this.TextureComboBox.IntegralHeight = false;
             this.TextureComboBox.ItemHeight = 15;
-            this.TextureComboBox.Location = new System.Drawing.Point(60, 30);
+            this.TextureComboBox.Location = new System.Drawing.Point(11, 66);
             this.TextureComboBox.Name = "TextureComboBox";
-            this.TextureComboBox.Size = new System.Drawing.Size(137, 21);
+            this.TextureComboBox.Size = new System.Drawing.Size(157, 21);
             this.TextureComboBox.TabIndex = 9;
+            this.TextureComboBox.SelectedIndexChanged += new System.EventHandler(this.TextureComboBox_SelectedIndexChanged);
             this.TextureComboBox.SelectionChangeCommitted += new System.EventHandler(this.TextureSelectionChanged);
             // 
             // TextureSidebarPanel
@@ -157,9 +158,9 @@
             this.Controls.Add(this.label4);
             this.DoubleBuffered = true;
             this.MaximumSize = new System.Drawing.Size(0, 250);
-            this.MinimumSize = new System.Drawing.Size(200, 165);
+            this.MinimumSize = new System.Drawing.Size(185, 165);
             this.Name = "TextureSidebarPanel";
-            this.Size = new System.Drawing.Size(200, 165);
+            this.Size = new System.Drawing.Size(185, 210);
             ((System.ComponentModel.ISupportInitialize)(this.SelectionPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

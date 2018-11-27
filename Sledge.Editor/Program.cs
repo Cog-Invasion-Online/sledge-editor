@@ -15,8 +15,8 @@ namespace Sledge.Editor
         [STAThread]
         static void Main()
         {
-            //Application.EnableVisualStyles();
-            Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.NoneEnabled;
+            Application.EnableVisualStyles();
+            Application.VisualStyleState = System.Windows.Forms.VisualStyles.VisualStyleState.NonClientAreaEnabled;
             Application.SetCompatibleTextRenderingDefault(false);
             RegisterHandlers();
             SingleInstance.Start(typeof(Editor));

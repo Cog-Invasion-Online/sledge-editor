@@ -118,5 +118,10 @@ namespace Sledge.Editor.UI.Sidebar
             }
             SizeLabel.Text = string.Format("{0} x {1}", selection.Width, selection.Height);
         }
+
+        private void TextureComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
