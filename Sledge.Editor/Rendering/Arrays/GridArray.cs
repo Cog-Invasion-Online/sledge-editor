@@ -54,7 +54,9 @@ namespace Sledge.Editor.Rendering.Arrays
             {
                 var c = Sledge.Settings.Grid.GridLines;
                 if (i == 0) c = Sledge.Settings.Grid.ZeroLines;
-                else if (i % Sledge.Settings.Grid.Highlight2UnitNum == 0 && Sledge.Settings.Grid.Highlight2On) c = Sledge.Settings.Grid.Highlight2;
+                else if (i % Sledge.Settings.Grid.Highlight2UnitNum == 0 &&
+                    Sledge.Settings.Grid.Highlight2On)
+                    c = Sledge.Settings.Grid.Highlight2;
                 else if (i % (_step * Sledge.Settings.Grid.Highlight1LineNum) == 0 && Sledge.Settings.Grid.Highlight1On) c = Sledge.Settings.Grid.Highlight1;
                 var ifloat = (float)i;
                 MakePoint(c, _low, ifloat);

@@ -18,7 +18,8 @@ namespace Sledge.Providers.Texture
     {
         private readonly Dictionary<TexturePackage, QuickRoot> _roots = new Dictionary<TexturePackage, QuickRoot>();
 
-        static string[] _extensions = new string[] { ".jpg", ".png" };
+        static string[] _extensions = new string[] { ".mat" };
+        static string[] _texextensions = new string[] { ".jpg", ".png" };
 
         public override IEnumerable<TexturePackage> CreatePackages(IEnumerable<string> sourceRoots, IEnumerable<string> additionalPackages, IEnumerable<string> blacklist, IEnumerable<string> whitelist)
         {
@@ -31,13 +32,56 @@ namespace Sledge.Providers.Texture
 
             var texRoot = new QuickRoot(roots, "./");
 
+            Dictionary<string, GenericStructure> matcache = new Dictionary<string, GenericStructure>();
+
+            var types = new HashSet<string>
+            {
+                "unlitgeneric",
+                "lightmappedgeneric",
+                "lightmappedreflective",
+                "water",
+                "sprite",
+                "decalmodulate",
+                "modulate",
+                "subrect",
+                "worldvertextransition",
+                "lightmapped_4wayblend",
+                "unlittwotexture",
+                "worldtwotextureblend",
+                "skyfog",
+                "skybox"
+            };
+
             foreach (string tex in texRoot.GetFiles())
             {
                 int width = 1;
                 int height = 1;
 
-                using (Stream file = texRoot.OpenFile(tex))
+                var gs = GenericStructure.Parse(new StreamReader(texRoot.OpenFile(tex))).FirstOrDefault();
+                if (gs is null)
                 {
+                    Console.WriteLine("null gs");
+                    continue;
+                }
+                if (!types.Contains(gs.Name.ToLowerInvariant()))
+                {
+                    continue;
+                }
+                var basetexture = gs.GetPropertyValue("$basetexture", true);
+                if (basetexture is null)
+                {
+                    Console.WriteLine("null basetexture");
+                    continue;
+                }
+
+                using (Stream file = texRoot.OpenTexFile(basetexture))
+                {
+                    if (file is null)
+                    {
+                        Console.WriteLine("Texture not found {0}", basetexture);
+                        continue;
+                    }
+
                     using (Image img = Image.FromStream(stream: file, useEmbeddedColorManagement: false, validateImageData: false))
                     {
                         width = (int)img.PhysicalDimension.Width;
@@ -51,7 +95,7 @@ namespace Sledge.Providers.Texture
                 if (!packages.ContainsKey(dir))
                     packages.Add(dir, new TexturePackage(packageRoot, dir, this));
 
-                packages[dir].AddTexture(new TextureItem(packages[dir], tex, TextureFlags.None, tex, width, height));
+                packages[dir].AddTexture(new TextureItem(packages[dir], tex, TextureFlags.None, basetexture, width, height));
             }
 
             foreach (var tp in packages.Values)
@@ -111,10 +155,10 @@ namespace Sledge.Providers.Texture
             foreach (var group in groups)
             {
                 var root = _roots[group.Key];
-                var files = group.Where(ti => root.HasFile(ti.PrimarySubItem.Name)).ToList();
+                var files = group.Where(ti => root.HasTexFile(ti.PrimarySubItem.Name)).ToList();
                 foreach (var ti in files)
                 {
-                    using (Bitmap bmp = GetBitmap(root.OpenFile(ti.PrimarySubItem.Name)))
+                    using (Bitmap bmp = GetBitmap(root.OpenTexFile(ti.PrimarySubItem.Name)))
                     {
                         TextureHelper.Create(ti.Name, bmp, ti.Width, ti.Height, ti.Flags);
                     }
@@ -142,14 +186,14 @@ namespace Sledge.Providers.Texture
             
             public bool HasImage(TextureItem item)
             {
-                return _roots.Any(x => x.HasFile(item.PrimarySubItem.Name));
+                return _roots.Any(x => x.HasTexFile(item.PrimarySubItem.Name));
             }
 
             public Bitmap GetImage(TextureItem item)
             {
-                var root = _roots.FirstOrDefault(x => x.HasFile(item.PrimarySubItem.Name));
+                var root = _roots.FirstOrDefault(x => x.HasTexFile(item.PrimarySubItem.Name));
                 if (root == null) return null;
-                var stream = root.OpenFile(item.PrimarySubItem.Name);
+                var stream = root.OpenTexFile(item.PrimarySubItem.Name);
                 if (stream == null) return null;
 
                 using (stream)
@@ -247,6 +291,31 @@ namespace Sledge.Providers.Texture
                 return false;
             }
 
+            public bool HasTexFile(string path)
+            {
+                path = StripFirstFolder(path);
+                if (!HasTexExtension(path))
+                {
+                    foreach (string ext in _extensions)
+                    {
+                        if (HasTexExtension(path + ext))
+                        {
+                            return true;
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (HasTexExtension(path))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
             public bool HasFile(string path)
             {
                 path = StripFirstFolder(path);
@@ -286,31 +355,51 @@ namespace Sledge.Providers.Texture
                 return null;
             }
 
+            public bool HasTexExtension(string path)
+            {
+                foreach (string ext in _texextensions)
+                {
+                    if (path.EndsWith(ext))
+                        return true;
+                }
+
+                return false;
+            }
+
             public Stream OpenFile(string path)
             {
                 path = StripFirstFolder(path);
+                return OpenFileExtension(path);
+            }
 
-                if (!HasExtension(path))
-                {
-                    foreach (string ext in _extensions)
-                    {
-                        Stream result = OpenFileExtension(path + ext);
-                        if (result != null)
-                        {
-                            return result;
-                        }
-                    }
-                }
-                else
-                {
-                    Stream result = OpenFileExtension(path);
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
+            public Stream OpenTexFile(string path)
+            {
+                path = StripFirstFolder(path);
 
-                return null;
+                //if (!HasExtension(path))
+                //{
+                //    foreach (string ext in _extensions)
+                //    {
+                //        Stream result = OpenFileExtension(path + ext);
+                //        if (result != null)
+                //        {
+                //            return result;
+                //        }
+                //    }
+                //}
+                //else
+                // {
+                //    Stream result = OpenFileExtension(path);
+                //    if (result != null)
+                //    {
+                //        return result;
+                //    }
+                //}
+
+                if (!HasTexExtension(path))
+                    return null;
+
+                return OpenFileExtension(path);
             }
 
             public void Dispose()

@@ -140,6 +140,7 @@ namespace Sledge.Editor.Rendering.Renderers
                     }
                     var tform = Matrix.Rotation(Quaternion.EulerAngles(angles)).Translate(origin);
                     _mapObject2DShader.Transformation = tform.ToGLSLMatrix4();
+                    _mapObject2DShader.OverrideColour = new Vector4(0, 1, 1, 1);
                     arr.RenderWireframe(context.Context);
                 }
                 _mapObject2DShader.Transformation = Matrix4.Identity;

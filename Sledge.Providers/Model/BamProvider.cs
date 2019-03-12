@@ -765,6 +765,29 @@ namespace Sledge.Providers.Model
 
     }
 
+    public class BSPMaterialAttrib : RenderAttrib
+    {
+        public string _matfile;
+
+        public static Dictionary<string, GenericStructure> MatCache;
+        /*public static GenericStructure GetFromFile(string file)
+        {
+            if (MatCache.ContainsKey(file))
+            {
+                return MatCache[file];
+            }
+
+            GenericStructure gs = GenericStructure.Parse()
+        }*/
+
+        public override void read_datagram(BamReader manager, BinaryReader br)
+        {
+            base.read_datagram(manager, br);
+
+            _matfile = br.ReadPandaString();
+        }
+    }
+
     public class TextureAttrib : RenderAttrib
     {
         public Texture _texture;
@@ -1653,7 +1676,7 @@ namespace Sledge.Providers.Model
     /// </summary>
     public class BamProvider : ModelProvider
     {
-        public static int version_minor = 42;
+        public static int version_minor = 44;
         public static int version_major = 6;
         public static int first_minor_ver = 14;
         public static string magic_number = "pbj";
