@@ -133,6 +133,20 @@ namespace Sledge.Editor.Tools
                 g.UpdateBoundingBox();
                 return g;
             }
+
+            // Apply default texture/lightmap scales
+            foreach (var newbrush in created)
+            {
+                var newsolid = newbrush as Solid;
+                foreach (var face in newsolid.Faces)
+                {
+                    face.Texture.XScale = Document.Environment.Game.DefaultTextureScale;
+                    face.Texture.YScale = Document.Environment.Game.DefaultTextureScale;
+                    face.Texture.LightmapScale = Document.Environment.Game.DefaultLightmapScale;
+                    face.CalculateTextureCoordinates(true);
+                }
+            }
+
             return created.FirstOrDefault();
         }
 

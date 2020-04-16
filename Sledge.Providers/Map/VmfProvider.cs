@@ -343,6 +343,16 @@ namespace Sledge.Providers.Map
             {
                 string value = conn.GetPropertyValue(outputName, false);
                 IEnumerable<string> elems = value.Split(',');
+
+                bool onceOnly;
+                string szOnceOnly = elems.ElementAt(4);
+                if (szOnceOnly == "1")
+                    onceOnly = true;
+                else if (szOnceOnly == "0")
+                    onceOnly = false;
+                else
+                    onceOnly = Convert.ToBoolean(szOnceOnly);
+
                 Output op = new Output()
                 {
                     Name = outputName,
@@ -350,7 +360,7 @@ namespace Sledge.Providers.Map
                     Input = elems.ElementAt(1),
                     Parameter = elems.ElementAt(2),
                     Delay = Convert.ToDecimal(elems.ElementAt(3)),
-                    OnceOnly = Convert.ToBoolean(elems.ElementAt(4))
+                    OnceOnly = onceOnly
                 };
                 ret.EntityData.Outputs.Add(op);
             }

@@ -56,6 +56,7 @@ namespace Sledge.Providers.Texture
             {
                 int width = 1;
                 int height = 1;
+                bool translucent = false;
 
                 var gs = GenericStructure.Parse(new StreamReader(texRoot.OpenFile(tex))).FirstOrDefault();
                 if (gs is null)
@@ -86,6 +87,7 @@ namespace Sledge.Providers.Texture
                     {
                         width = (int)img.PhysicalDimension.Width;
                         height = (int)img.PhysicalDimension.Height;
+                        translucent = (img.Flags & (int)ImageFlags.HasTranslucent) != 0;
                     }
                 }
 
@@ -95,7 +97,13 @@ namespace Sledge.Providers.Texture
                 if (!packages.ContainsKey(dir))
                     packages.Add(dir, new TexturePackage(packageRoot, dir, this));
 
-                packages[dir].AddTexture(new TextureItem(packages[dir], tex, TextureFlags.None, basetexture, width, height));
+                TextureFlags flags;
+                if (translucent)
+                    flags = TextureFlags.Transparent;
+                else
+                    flags = TextureFlags.None;
+
+                packages[dir].AddTexture(new TextureItem(packages[dir], tex, flags, basetexture, width, height));
             }
 
             foreach (var tp in packages.Values)

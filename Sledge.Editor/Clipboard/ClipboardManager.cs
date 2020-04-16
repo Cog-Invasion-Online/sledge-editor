@@ -84,8 +84,10 @@ namespace Sledge.Editor.Clipboard
                     var gs = GenericStructure.Parse(tr);
                     return VmfProvider.ExtractCopyStream(gs.FirstOrDefault(), document.Map.IDGenerator);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine("Exception when copying entity:");
+                    Console.WriteLine(e.ToString());
                     return null;
                 }
             }

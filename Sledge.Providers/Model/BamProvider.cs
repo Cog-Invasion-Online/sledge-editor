@@ -768,23 +768,55 @@ namespace Sledge.Providers.Model
     public class BSPMaterialAttrib : RenderAttrib
     {
         public string _matfile;
+        public GenericStructure _matstructure;
+        public Texture _basetexture;
 
-        public static Dictionary<string, GenericStructure> MatCache;
-        /*public static GenericStructure GetFromFile(string file)
+        public static Dictionary<string, GenericStructure> MatCache = new Dictionary<string, GenericStructure>();
+        public static GenericStructure GetFromFile(string file, IFile root)
         {
             if (MatCache.ContainsKey(file))
             {
                 return MatCache[file];
             }
 
-            GenericStructure gs = GenericStructure.Parse()
-        }*/
+            IFile parent = root.Parent;
+            while (parent.Parent != null)
+            {
+                parent = parent.Parent;
+            }
+            IFile tfile = parent.TraversePath(file);
+            StringBuilder str = new StringBuilder(Encoding.Default.GetString(tfile.ReadAll()));
+            StringReader rdr = new StringReader(str.ToString());
+
+            List<GenericStructure> gs = GenericStructure.Parse(rdr).ToList();
+            if (gs.Count == 0)
+            {
+                MatCache[file] = null;
+                return null;
+            }
+
+            MatCache[file] = gs.ElementAt(0);
+
+            return MatCache[file];
+        }
 
         public override void read_datagram(BamReader manager, BinaryReader br)
         {
             base.read_datagram(manager, br);
 
             _matfile = br.ReadPandaString();
+            _matstructure = GetFromFile(_matfile, manager._file);
+            if (_matstructure != null)
+            {
+                _basetexture = new Texture();
+                _basetexture._name = "basetexture";
+                _basetexture._filename = _matstructure.GetPropertyValue("$basetexture", true);
+                _basetexture._alpha_filename = "";
+            }
+            else
+            {
+                _basetexture = null;
+            }
         }
     }
 
@@ -1078,7 +1110,7 @@ namespace Sledge.Providers.Model
         Dictionary<int, TypedWritable> _created_objs;
         List<ToFillIn> _tofillin;
         List<Texture> _textures;
-        IFile _file;
+        public IFile _file;
 
         public BamReader()
         {
@@ -1287,6 +1319,9 @@ namespace Sledge.Providers.Model
 
         public int HasTexture(Texture tex)
         {
+            if (tex == null)
+                return -1;
+
             for (int i = 0; i < _textures.Count; i++)
             {
                 if (_textures[i].CompareTo(tex) == 0)
@@ -1311,15 +1346,27 @@ namespace Sledge.Providers.Model
                     GeomVertexData data = geom._data;
                     GeomVertexReader reader = new GeomVertexReader(data);
                     TraverseData gdata = tdata.Compose(new TransformState(), gn._geom_states[i]);
-
                     
                     DataStructures.Models.Mesh mesh = new DataStructures.Models.Mesh(0);
                     mesh.SkinRef = 0;
-                    if (gdata.state.HasAttrib(typeof(TextureAttrib)))
+                    if (gdata.state.HasAttrib(typeof(BSPMaterialAttrib)) || gdata.state.HasAttrib(typeof(TextureAttrib)))
                     {
-                        TextureAttrib tattr = (TextureAttrib)gdata.state.GetAttrib(typeof(TextureAttrib));
-                        int texId = HasTexture(tattr._texture);
-                        if (texId == -1)
+                        Texture basetexture;
+                        if (gdata.state.HasAttrib(typeof(BSPMaterialAttrib)))
+                        {
+                            BSPMaterialAttrib mattr = (BSPMaterialAttrib)gdata.state.GetAttrib(typeof(BSPMaterialAttrib));
+                            basetexture = mattr._basetexture;
+                        }
+                        else
+                        {
+                            TextureAttrib tattr = (TextureAttrib)gdata.state.GetAttrib(typeof(TextureAttrib));
+                            basetexture = tattr._texture;
+                        }
+                        
+                        int texId = HasTexture(basetexture);
+                        if (basetexture == null)
+                            texId = 0;
+                        else if (texId == -1)
                         {
                             try
                             {
@@ -1329,11 +1376,11 @@ namespace Sledge.Providers.Model
                                 {
                                     parent = parent.Parent;
                                 }
-                                IFile tfile = parent.TraversePath(tattr._texture._filename);
+                                IFile tfile = parent.TraversePath(basetexture._filename);
                                 System.Drawing.Bitmap texbmp = new System.Drawing.Bitmap(System.Drawing.Image.FromStream(new MemoryStream(tfile.ReadAll())));
                                 DataStructures.Models.Texture tex = new DataStructures.Models.Texture()
                                 {
-                                    Name = tattr._texture._name,
+                                    Name = basetexture._name,
                                     Index = texId,
                                     Image = texbmp,
                                     Width = texbmp.Width,
@@ -1341,8 +1388,8 @@ namespace Sledge.Providers.Model
                                     Flags = 0
                                 };
                                 mdl.Textures.Add(tex);
-                                _textures.Add(tattr._texture);
-                                Console.WriteLine("Added new texture {0}, {1}", tex.Name, tattr._texture._filename);
+                                _textures.Add(basetexture);
+                                Console.WriteLine("Added new texture {0}, {1}", tex.Name, basetexture._filename);
                             }
                             catch (Exception e)
                             {

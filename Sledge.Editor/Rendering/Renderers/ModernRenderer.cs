@@ -138,7 +138,9 @@ namespace Sledge.Editor.Rendering.Renderers
                         origin *= _selectionTransformMat;
                         // TODO: rotation/angles
                     }
+                    var scale = tuple.Item1.EntityData.GetPropertyCoordinate("scale", Coordinate.One);
                     var tform = Matrix.Rotation(Quaternion.EulerAngles(angles)).Translate(origin);
+                    tform *= Matrix.Scale(scale);
                     _mapObject2DShader.Transformation = tform.ToGLSLMatrix4();
                     _mapObject2DShader.OverrideColour = new Vector4(0, 1, 1, 1);
                     arr.RenderWireframe(context.Context);
@@ -233,7 +235,12 @@ namespace Sledge.Editor.Rendering.Renderers
                             origin *= _selectionTransformMat;
                             // TODO: rotation/angles
                         }
-                        var tform = Matrix.Rotation(Quaternion.EulerAngles(angles)).Translate(origin);
+
+                        var scale = tuple.Item1.EntityData.GetPropertyCoordinate("scale", Coordinate.One);
+                        var tform = Matrix.Rotation(Quaternion.EulerAngles(angles));
+                        tform = tform.Translate(origin);
+                        tform *= Matrix.Scale(scale);
+
                         _mapObject3DShader.Transformation = tform.ToGLSLMatrix4();
                         arr.RenderTextured(context.Context);
                     }
